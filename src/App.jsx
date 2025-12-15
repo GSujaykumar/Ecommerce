@@ -11,8 +11,8 @@ function App() {
   return (
     <>
       <Header />
-     <Outlet />
-     <Cart />
+      <Outlet />
+      <Cart />
       <Footer />
     </>
   )

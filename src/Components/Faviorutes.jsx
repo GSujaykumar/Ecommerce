@@ -30,7 +30,7 @@ function Faviorutes({ image, title, price, color }) {
           <span className="text-lg font-bold text-black bg-indigo-50 px-3 py-1 rounded-full shadow-sm">
             ${price}
           </span>
-          <button className="px-5 py-2 bg-indigo-600 text-white rounded-xl shadow-md transition-all duration-300 transform hover:-translate-y-1">
+          <button className="px-5 py-2 btn-primary text-white rounded-xl shadow-md transition-all duration-300 transform hover:-translate-y-1">
             Add to Cart
           </button>
         </div>

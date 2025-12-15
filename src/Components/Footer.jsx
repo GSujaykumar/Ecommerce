@@ -103,7 +103,7 @@ function Footer() {
             />
             <button
               className="px-5 py-2 bg-indigo-600 text-white rounded-r-lg
-              hover:bg-indigo-500 transition"
+              hover:bg-black-500 transition"
             >
               Join
             </button>
