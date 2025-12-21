@@ -48,7 +48,7 @@ function WishlistPage() {
       price: 59.99,
       color: "Beige",
       image:
-        "https://images.unsplash.com/photo-1593032465170-0f686b2a2c5c?auto=format&fit=crop&w=500&q=80",
+        "https://images.unsplash.com/photo-1554568218-dbb0b4193414?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     },
     {
       id: 2,
@@ -56,7 +56,8 @@ function WishlistPage() {
       price: 79.99,
       color: "White",
       image:
-        "https://images.unsplash.com/photo-1595950656441-1c9aebba7f72?auto=format&fit=crop&w=500&q=80",
+         "https://images.unsplash.com/photo-1554568218-dbb0b4193414?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+
     },
     {
       id: 3,
@@ -64,7 +65,8 @@ function WishlistPage() {
       price: 199.99,
       color: "Silver",
       image:
-        "https://images.unsplash.com/photo-1600185366336-1dc7b63ff278?auto=format&fit=crop&w=500&q=80",
+            "https://images.unsplash.com/photo-1554568218-dbb0b4193414?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+
     },
     {
       id: 4,
@@ -72,7 +74,8 @@ function WishlistPage() {
       price: 49.99,
       color: "Brown",
       image:
-        "https://images.unsplash.com/photo-1593032457865-1f2f9f1f54c2?auto=format&fit=crop&w=500&q=80",
+                   "https://images.unsplash.com/photo-1554568218-dbb0b4193414?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+
     },
     {
       id: 5,
@@ -80,7 +83,8 @@ function WishlistPage() {
       price: 29.99,
       color: "Black",
       image:
-        "https://images.unsplash.com/photo-1563720223697-c22f4217f3c1?auto=format&fit=crop&w=500&q=80",
+            "https://images.unsplash.com/photo-1554568218-dbb0b4193414?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+
     },
   ];
 

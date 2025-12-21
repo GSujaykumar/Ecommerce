@@ -8,6 +8,8 @@ import Home from './Components/Home.jsx';
 import About from './Components/About.jsx';
 import Contact from './Components/Contact.jsx';
 import Faviorutes from './Components/Faviorutes.jsx';
+import ProductOverview from './Components/ProductOverview.jsx';
+
 
 
 
@@ -33,6 +35,12 @@ const router = createBrowserRouter([
         path: "/faviorutes",
         element: <Faviorutes />,
       },
+      {
+        path: "/product/:id",
+        element: <ProductOverview />,
+      }
+
+
     ]
 
   },

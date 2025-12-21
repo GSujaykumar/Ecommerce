@@ -3,11 +3,31 @@ import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 
 import { FiShoppingCart, FiHeart, FiUser, FiSearch } from "react-icons/fi";
+import { FiMoon, FiSun } from "react-icons/fi";
+
 
 function Header() {
+    const [darkMode, setDarkMode] = useState(false);
+    useEffect(() => {
+        if (darkMode) {
+            document.documentElement.classList.add("dark");
+        } else {
+            document.documentElement.classList.remove("dark");
+        }
+    }, [darkMode]);
+
+
     const linkClass = ({ isActive }) =>
-        `text-sm/6 font-semibold text-gray-900 transition hover:text-gray-900 ${isActive ? "border-b-3 border-black " : "border-b-2 border-transparent"
-        }`;
+        `
+    text-sm/6 font-semibold transition
+    text-[var(--color-text-primary)]
+    hover:text-[var(--color-text-secondary)]
+    dark:text-[var(--color-dark-text-primary)]
+    ${isActive
+            ? "border-b-3 border-[var(--color-text-primary)] dark:border-[var(--color-dark-text-primary)]"
+            : "border-b-2 border-transparent"
+        }
+  `;
 
     const [scrollProgress, setScrollProgress] = useState(0);
 
@@ -24,7 +44,8 @@ function Header() {
     }, []);
 
     return (
-        <header className="bg-white fixed top-0 left-0 w-full z-50">
+        <header className="bg-white dark:bg-darkbg fixed top-0 left-0 w-full z-50 transition-colors duration-300  ">
+
             <nav aria-label="Global" className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8">
                 <div className="flex lg:flex-1">
                     <a href="#" className="-m-1.5 p-1.5">
@@ -59,27 +80,10 @@ function Header() {
                     </button>
                 </div>
 
-                <el-popover-group className="hidden lg:flex lg:gap-x-12">
-                    <div className="relative">
-                        <button popoverTarget="desktop-menu-product" className="flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900">
-                            Men
-                            <svg
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                                data-slot="icon"
-                                aria-hidden="true"
-                                className="size-5 flex-none text-gray-400"
-                            >
-                                <path
-                                    d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z"
-                                    clipRule="evenodd"
-                                    fillRule="evenodd"
-                                />
-                            </svg>
-                        </button>
-
-                        {/* Popover content here */}
-                    </div>
+                <el-popover-group className="hidden lg:flex lg:gap-x-12 ">
+                    <NavLink to="/men" className={linkClass}>
+                        Men
+                    </NavLink>
 
                     <NavLink to="/women" className={linkClass}>
                         Women
@@ -101,15 +105,27 @@ function Header() {
                 <div className="hidden lg:flex lg:flex-1 lg:justify-end items-center gap-6">
                     {/* Search */}
                     <button className="p-2 rounded-full hover:bg-gray-100 transition">
-                        <FiSearch className="text-xl text-gray-700" />
+                        <FiSearch className="text-xl text-white-700" />
                     </button>
+                    {/* Dark Mode Toggle */}
+                    <button
+                        onClick={() => setDarkMode(!darkMode)}
+                        className="p-2 rounded-full hover:bg-gray-100"
+                    >
+                        {darkMode ? (
+                            <FiSun className="text-xl text-yellow-400" />
+                        ) : (
+                            <FiMoon className="text-xl text-white-700" />
+                        )}
+                    </button>
+
 
                     {/* Wishlist */}
                     <NavLink
                         to="/faviorutes"
                         className="relative p-2 rounded-full hover:bg-gray-100 transition flex items-center justify-center"
                     >
-                        <FiHeart className="text-xl text-gray-700" />
+                        <FiHeart className="text-xl text-gray-700 dark:text-white" />
                         <span className="absolute -top-1 -right-1 bg-indigo-600 text-white text-xs px-1.5 rounded-full">
                             2
                         </span>
@@ -117,7 +133,7 @@ function Header() {
 
                     {/* Cart */}
                     <button command="show-modal" commandfor="drawer" className="relative p-2 rounded-full hover:bg-gray-100 transition">
-                        <FiShoppingCart className="text-xl text-gray-700 " />
+                        <FiShoppingCart className="text-xl text-gray-700  dark:text-white" />
                         <span className="absolute -top-1 -right-1 bg-indigo-600 text-white text-xs px-1.5 rounded-full">
                             2
                         </span>
@@ -125,8 +141,8 @@ function Header() {
 
                     {/* User Profile */}
                     <button className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-gray-100 transition">
-                        <FiUser className="text-xl text-gray-700" />
-                        <span className="text-sm font-semibold text-gray-700">Account</span>
+                        <FiUser className="text-xl text-gray-700 dark:text-white " />
+                        <span className="text-sm font-semibold dark:var(--color-dark-text-secondary)">Account</span>
                     </button>
                 </div>
             </nav>
@@ -163,6 +179,7 @@ function Header() {
                             {/* Mobile menu links here */}
 
 
+
                             <div className="mt-6 flow-root">
                                 <div className="-my-6 divide-y divide-gray-200">
 
@@ -178,7 +195,7 @@ function Header() {
 
                                         <NavLink
                                             to="/men"
-                                            className="block rounded-xl px-4 py-3 text-base font-semibold text-gray-900 hover:bg-gray-100 transition"
+                                            className="block rounded-xl px-4 py-3 text-base font-semibold text-gray-100 hover:bg-gray-100 transition"
                                         >
                                             Men
                                         </NavLink>
@@ -214,6 +231,21 @@ function Header() {
 
                                     {/* Divider */}
                                     <div className="py-6 space-y-4">
+                                        {/* Search */}
+                                        <button className="p-2 rounded-full hover:bg-gray-100 transition">
+                                            <FiSearch className="text-xl text-white-700" />
+                                        </button>
+                                        {/* Dark Mode Toggle */}
+                                        <button
+                                            onClick={() => setDarkMode(!darkMode)}
+                                            className="p-2 rounded-full hover:bg-gray-100"
+                                        >
+                                            {darkMode ? (
+                                                <FiSun className="text-xl text-yellow-400" />
+                                            ) : (
+                                                <FiMoon className="text-xl text-white-700" />
+                                            )}
+                                        </button>
 
                                         {/* Wishlist */}
                                         <NavLink

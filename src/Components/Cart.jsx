@@ -13,7 +13,7 @@ function Cart() {
 
           <div tabIndex="0" className="absolute inset-0 pl-10 focus:outline-none sm:pl-16">
             <el-dialog-panel className="ml-auto block size-full max-w-md transform transition duration-500 ease-in-out data-closed:translate-x-full sm:duration-700">
-              <div className="flex h-full flex-col overflow-y-auto bg-white shadow-xl">
+              <div className="flex h-full flex-col overflow-y-auto bg-[var(--color-normalbg)] dark:bg-[var(--color-darkbg)]bg-white shadow-xl">
                 <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
                   <div className="flex items-start justify-between">
                     <h2 id="drawer-title" className="text-lg font-medium text-gray-900">Shopping cart</h2>

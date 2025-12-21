@@ -9,7 +9,7 @@ import {
 
 function Footer() {
   return (
-    <footer className="bg-white text-gray-600 border-t">
+    <footer className="bg-white text-gray-600 border-t  bg-[var(--color-normalbg)] dark:bg-[var(--color-darkbg)]">
       <div className="max-w-7xl mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-4 gap-12">
 
         {/* Brand */}
@@ -99,10 +99,10 @@ function Footer() {
               type="email"
               placeholder="Enter your email"
               className="w-full px-4 py-2 rounded-l-lg bg-white border border-gray-300 text-sm
-              focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              focus:outline-none focus:ring-2 focus:ring-black"
             />
             <button
-              className="px-5 py-2 bg-indigo-600 text-white rounded-r-lg
+              className="px-5 py-2 bg-black text-white rounded-r-lg
               hover:bg-black-500 transition"
             >
               Join

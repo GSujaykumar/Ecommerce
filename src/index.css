@@ -1,8 +1,72 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
+/* ===============================
+   THEME VARIABLES (GLOBAL)
+================================ */
+@theme {
+  /* Backgrounds */
+  --color-normalbg: #f3f4f6;
+  --color-darkbg: #0f172a;
+
+  /* Text colors */
+  --color-text-primary: #111827;
+  --color-text-secondary: #4b5563;
+
+  --color-dark-text-primary: #e5e7eb;
+  --color-dark-text-secondary: #9ca3af;
+}
+
+/* ===============================
+   GLOBAL BASE STYLES
+================================ */
+body {
+  background-color: var(--color-normalbg);
+  color: var(--color-text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dark body {
+  background-color: var(--color-darkbg);
+  color: var(--color-dark-text-primary);
+}
+
+/* ===============================
+   COMPONENT STYLES
+================================ */
 @layer components {
   .btn-primary {
-    @apply bg-black text-white px-6 py-3 rounded-xl
-           hover:bg-gray-900 transition;
+    @apply px-6 py-3 rounded-xl transition;
+    background-color: #111827;
+    color: #f9fafb;
+  }
+
+  .dark .btn-primary {
+    background-color: #f9fafb;
+    color: #111827;
+  }
+
+  .premium-input {
+    @apply w-full rounded-xl px-4 py-3 transition;
+    border: 1px solid #d1d5db;
+    background-color: white;
+    color: #111827;
+  }
+
+  .dark .premium-input {
+    background-color: #020617;
+    border-color: #334155;
+    color: #e5e7eb;
+  }
+
+  .delivery-card {
+    @apply flex items-center justify-between rounded-xl p-4 cursor-pointer transition;
+    border: 1px solid #e5e7eb;
+    background-color: white;
+  }
+
+  .dark .delivery-card {
+    border-color: #334155;
+    background-color: #020617;
   }
 }

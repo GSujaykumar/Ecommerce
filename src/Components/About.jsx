@@ -29,7 +29,7 @@ const About = () => {
     };
 
     return (
-        <section className="bg-white py-32">
+        <section className="bg-[var(--color-normalbg)] dark:bg-[var(--color-darkbg)] py-32">
             <div className="max-w-7xl mx-auto px-6 lg:px-24 space-y-32">
 
                 {/* ===== HERO / INTRO ===== */}
