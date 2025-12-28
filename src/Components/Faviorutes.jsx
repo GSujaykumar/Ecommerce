@@ -40,7 +40,7 @@ function Faviorutes({ image, title, price, color }) {
 }
 
 function WishlistPage() {
-  // Static data for products with working e-commerce images
+  
   const favoriteProducts = [
     {
       id: 1,

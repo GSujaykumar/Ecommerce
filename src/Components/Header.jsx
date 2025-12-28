@@ -140,10 +140,12 @@ function Header() {
                     </button>
 
                     {/* User Profile */}
-                    <button className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-gray-100 transition">
-                        <FiUser className="text-xl text-gray-700 dark:text-white " />
-                        <span className="text-sm font-semibold dark:var(--color-dark-text-secondary)">Account</span>
-                    </button>
+                    <NavLink
+                        to="/login"
+                        className="w-full flex items-center gap-3 rounded-xl px-4 py-3 font-semibold text-gray-900  transition dark:text-white">
+                        <FiUser className="text-xl" />
+                        Account
+                    </NavLink>
                 </div>
             </nav>
 
@@ -265,12 +267,20 @@ function Header() {
                                             <FiShoppingCart className="text-xl" />
                                             Cart
                                         </button>
-
+                                        login
                                         {/* Account */}
-                                        <button className="w-full flex items-center gap-3 rounded-xl px-4 py-3 font-semibold text-gray-900 hover:bg-gray-100 transition">
+                                        {/* <button className="w-full flex items-center gap-3 rounded-xl px-4 py-3 font-semibold text-gray-900 hover:bg-gray-100 transition"
+
+                                            onClick={() => navigate("/login")}>
                                             <FiUser className="text-xl" />
                                             Account
-                                        </button>
+                                        </button> */}
+                                        <NavLink
+                                            to="/login"
+                                            className="w-full flex items-center gap-3 rounded-xl px-4 py-3 font-semibold text-gray-900 hover:bg-gray-100 transition">
+                                            <FiUser className="text-xl" />
+                                            Account
+                                        </NavLink>
                                     </div>
 
                                 </div>

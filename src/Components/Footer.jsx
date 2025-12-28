@@ -9,7 +9,7 @@ import {
 
 function Footer() {
   return (
-    <footer className="bg-white text-gray-600 border-t  bg-[var(--color-normalbg)] dark:bg-[var(--color-darkbg)]">
+    <footer className="dark:text-white text-gray-600 border-t  bg-[var(--color-normalbg)] dark:bg-[var(--color-darkbg)]">
       <div className="max-w-7xl mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-4 gap-12">
 
         {/* Brand */}
@@ -17,7 +17,7 @@ function Footer() {
           <h2 className="text-2xl font-bold text-gray-900">
             Obito Clothing Brand
           </h2>
-          <p className="mt-4 text-sm text-gray-500">
+          <p className="mt-4 dark:text-white text-sm text-gray-500">
             Building modern digital products with performance, design, and
             scalability in mind.
           </p>
@@ -26,7 +26,7 @@ function Footer() {
           <div className="flex space-x-4 mt-6">
             <a
               href="#"
-              className="p-3 bg-white border rounded-full text-gray-600 shadow-sm
+              className="p-3 dark:text-white border rounded-full text-gray-600 shadow-sm
               hover:bg-indigo-600 hover:text-white hover:border-indigo-600 transition"
             >
               <FaFacebookF />
@@ -34,7 +34,7 @@ function Footer() {
 
             <a
               href="#"
-              className="p-3 bg-white border rounded-full text-gray-600 shadow-sm
+              className="p-3 dark:text-white border rounded-full text-gray-600 shadow-sm
               hover:bg-pink-600 hover:text-white hover:border-pink-600 transition"
             >
               <FaInstagram />
@@ -42,7 +42,7 @@ function Footer() {
 
             <a
               href="#"
-              className="p-3 bg-white border rounded-full text-gray-600 shadow-sm
+              className="p-3 dark:text-white border rounded-full text-gray-600 shadow-sm
               hover:bg-sky-500 hover:text-white hover:border-sky-500 transition"
             >
               <FaTwitter />
@@ -50,7 +50,7 @@ function Footer() {
 
             <a
               href="#"
-              className="p-3 bg-white border rounded-full text-gray-600 shadow-sm
+              className="p-3 dark:text-white border rounded-full text-gray-600 shadow-sm
               hover:bg-blue-600 hover:text-white hover:border-blue-600 transition"
             >
               <FaLinkedinIn />
@@ -58,7 +58,7 @@ function Footer() {
 
             <a
               href="#"
-              className="p-3 bg-white border rounded-full text-gray-600 shadow-sm
+              className="p-3 dark:text-white border rounded-full text-gray-600 shadow-sm
               hover:bg-red-600 hover:text-white hover:border-red-600 transition"
             >
               <FaYoutube />
@@ -91,14 +91,14 @@ function Footer() {
         {/* Subscribe */}
         <div>
           <h3 className="text-gray-900 font-semibold mb-4">Subscribe</h3>
-          <p className="text-sm text-gray-500 mb-4">
+          <p className="text-sm text-gray-500 mb-4 dark:text-white">
             Get product updates and insights directly to your inbox.
           </p>
           <form className="flex">
             <input
               type="email"
               placeholder="Enter your email"
-              className="w-full px-4 py-2 rounded-l-lg bg-white border border-gray-300 text-sm
+              className="w-full px-4 py-2 rounded-l-lg dark:text-white border border-gray-300 text-sm
               focus:outline-none focus:ring-2 focus:ring-black"
             />
             <button

@@ -35,24 +35,24 @@ const About = () => {
                 {/* ===== HERO / INTRO ===== */}
                 <div className="grid md:grid-cols-2 gap-20 items-center">
                     <div>
-                        <h1 className="text-5xl font-extrabold text-gray-900 leading-tight">
-                            About <span className="text-black">LuxeMart</span>
+                        <h1 className="text-5xl font-extrabold text-gray-900 leading-tight dark:text-[var(--color-dark-text-primary)]">
+                            About <span className="text-black dark:text-[var(--color-dark-text-primary)]">LuxeMart</span>
                         </h1>
 
-                        <p className="mt-6 text-lg text-gray-700">
+                        <p className="mt-6 text-lg text-gray-700 dark:text-[var(--color-dark-text-secondary)]">
                             LuxeMart is a modern e-commerce platform built for customers who
                             value quality, authenticity, and refined design. We bring together
                             premium fashion, lifestyle, and home essentials — all in one place.
                         </p>
 
-                        <p className="mt-4 text-lg text-gray-700">
+                        <p className="mt-4 text-lg text-gray-700 dark:text-[var(--color-dark-text-secondary)]">
                             From everyday wear to luxury essentials, our products are carefully
                             selected to meet the highest standards of craftsmanship, comfort,
                             and style.
                         </p>
 
                         <div className="mt-10">
-                            <button className="bg-black text-white px-8 py-4 rounded-xl font-semibold hover:bg-gray-900 transition">
+                            <button className="bg-black text-white px-8 py-4 rounded-xl font-semibold hover:bg-white-900 transition">
                                 Explore Our Collection
                             </button>
                         </div>
@@ -70,28 +70,28 @@ const About = () => {
                 {/* ===== TRUST STATS ===== */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-10 text-center">
                     <div>
-                        <h3 className="text-4xl font-extrabold text-black">
+                        <h3 className="text-4xl font-extrabold text-black dark:text-[var(--color-dark-text-primary)]">
                             <Counter end={50} />K+
                         </h3>
                         <p className="mt-2 text-gray-600">Happy Customers</p>
                     </div>
 
                     <div>
-                        <h3 className="text-4xl font-extrabold text-black">
+                        <h3 className="text-4xl font-extrabold text-black dark:text-[var(--color-dark-text-primary)]">
                             <Counter end={5} />K+
                         </h3>
                         <p className="mt-2 text-gray-600">Premium Products</p>
                     </div>
 
                     <div>
-                        <h3 className="text-4xl font-extrabold text-black">
+                        <h3 className="text-4xl font-extrabold text-black dark:text-[var(--color-dark-text-primary)]">
                             <Counter end={30} />+
                         </h3>
                         <p className="mt-2 text-gray-600">Countries Served</p>
                     </div>
 
                     <div>
-                        <h3 className="text-4xl font-extrabold text-black">
+                        <h3 className="text-4xl font-extrabold text-black dark:text-[var(--color-dark-text-primary)]">
                             24/7
                         </h3>
                         <p className="mt-2 text-gray-600">Customer Support</p>
