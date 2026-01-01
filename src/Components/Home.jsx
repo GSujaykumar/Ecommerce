@@ -6,6 +6,7 @@ import FeaturedProducts from "./FeaturedProducts";
 import PromoBanner from "./PromoBanner";
 import Checkout from "./Checkout";
 import Texttype from "./Texttype";
+import DiscountSection from "./DiscountSection";
 
 
 
@@ -14,10 +15,10 @@ const Home = () => {
         <div>
             <HeroSection />
             {/* <Categoriesection /> */}
-            <ProductCard    />
             <FeaturedProducts />
-            <PromoBanner    />
-            <Texttype    />
+            <DiscountSection />
+            <PromoBanner />
+            <Texttype />
             {/* <Checkout    /> */}
         </div>
     );
