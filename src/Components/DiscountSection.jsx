@@ -3,6 +3,7 @@ import { fetchProducts } from '../api';
 import { useContext, useEffect, useState } from 'react';
 import { ShopContext } from '../Context/ShopContext';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 function DiscountSection() {
     const [deals, setDeals] = useState([]);
@@ -23,6 +24,20 @@ function DiscountSection() {
         };
         getDeals();
     }, []);
+
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: { staggerChildren: 0.2 }
+        }
+    };
+
+    const cardVariants = {
+        hidden: { opacity: 0, y: 50 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+    };
+
     return (
         <section className="bg-white dark:bg-gray-900 py-24 transition-colors duration-300">
             <div className="max-w-7xl mx-auto px-6">
@@ -39,9 +54,19 @@ function DiscountSection() {
                     </a>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+                <motion.div
+                    variants={containerVariants}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.2 }}
+                    className="grid grid-cols-1 md:grid-cols-3 gap-10"
+                >
                     {deals.map((product) => (
-                        <div key={product.id} className="relative group bg-gray-50 dark:bg-gray-800 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
+                        <motion.div
+                            key={product.id}
+                            variants={cardVariants}
+                            className="relative group bg-gray-50 dark:bg-gray-800 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300"
+                        >
 
                             {/* Badge */}
                             <div className="absolute top-4 left-4 z-10 bg-red-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
@@ -76,9 +101,9 @@ function DiscountSection() {
                                     Add to Cart
                                 </button>
                             </div>
-                        </div>
+                        </motion.div>
                     ))}
-                </div>
+                </motion.div>
             </div>
         </section>
     );

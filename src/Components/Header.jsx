@@ -1,8 +1,9 @@
+
 import React, { useState, useEffect, useContext } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { ShopContext } from "../Context/ShopContext";
 
-import { FiShoppingCart, FiHeart, FiUser, FiSearch } from "react-icons/fi";
+import { FiShoppingCart, FiHeart, FiUser, FiSearch, FiMenu, FiX } from "react-icons/fi";
 import { FiMoon, FiSun } from "react-icons/fi";
 
 
@@ -10,6 +11,7 @@ function Header() {
     const [darkMode, setDarkMode] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [scrolled, setScrolled] = useState(false);
     const navigate = useNavigate();
 
     const { cartItems, favoriteItems, setIsCartOpen } = useContext(ShopContext);
@@ -25,48 +27,40 @@ function Header() {
         }
     }, [darkMode]);
 
-
-    const linkClass = ({ isActive }) =>
-        `
-    text-sm/6 font-semibold transition
-    text-[var(--color-text-primary)]
-    hover:text-[var(--color-text-secondary)]
-    dark:text-[var(--color-dark-text-primary)]
-    ${isActive
-            ? "border-b-3 border-[var(--color-text-primary)] dark:border-[var(--color-dark-text-primary)]"
-            : "border-b-2 border-transparent"
-        }
-  `;
-
-    const [scrollProgress, setScrollProgress] = useState(0);
-
     useEffect(() => {
         const handleScroll = () => {
-            const scrollTop = window.scrollY;
-            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-            const scrolled = (scrollTop / docHeight) * 100;
-            setScrollProgress(scrolled);
+            setScrolled(window.scrollY > 20);
         };
-
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
-    return (
-        <header className="bg-white dark:bg-gray-900 fixed top-0 left-0 w-full z-40 transition-colors duration-300 shadow-sm">
+    const linkClass = ({ isActive }) =>
+        `text-sm font-medium transition duration-200 ${isActive
+            ? "text-indigo-600 dark:text-indigo-400"
+            : "text-[var(--color-text-primary)] dark:text-[var(--color-dark-text-primary)] hover:text-indigo-600 dark:hover:text-indigo-400"
+        }`;
 
-            <nav aria-label="Global" className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8">
+    return (
+        <header
+            className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${scrolled
+                    ? "bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-sm border-b border-gray-200/50 dark:border-gray-800/50"
+                    : "bg-transparent py-2"
+                }`}
+        >
+            <nav className="mx-auto flex max-w-7xl items-center justify-between p-4 lg:px-8">
+
+                {/* Logo */}
                 <div className="flex lg:flex-1">
-                    <NavLink to="/" className="-m-1.5 p-1.5">
-                        <span className="sr-only">Your Company</span>
-                        <img
-                            src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600"
-                            alt=""
-                            className="h-8 w-auto"
-                        />
+                    <NavLink to="/" className="-m-1.5 p-1.5 flex items-center gap-2">
+                        <div className="h-8 w-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">
+                            O
+                        </div>
+                        <span className="font-bold text-xl tracking-tight text-gray-900 dark:text-white">Obito<span className="text-indigo-600">Store</span></span>
                     </NavLink>
                 </div>
 
+                {/* Mobile Menu Button */}
                 <div className="flex lg:hidden">
                     <button
                         type="button"
@@ -74,210 +68,120 @@ function Header() {
                         className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700 dark:text-gray-200"
                     >
                         <span className="sr-only">Open main menu</span>
-                        <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                            className="size-6"
-                        >
-                            <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
+                        <FiMenu className="h-6 w-6" />
                     </button>
                 </div>
 
-                <div className="hidden lg:flex lg:gap-x-12">
-                    <NavLink to="/men" className={linkClass}>
-                        Men
-                    </NavLink>
-
-                    <NavLink to="/women" className={linkClass}>
-                        Women
-                    </NavLink>
-                    <NavLink to="/kids" className={linkClass}>
-                        Kids
-                    </NavLink>
-                    <NavLink to="/" end className={linkClass}>
-                        Home
-                    </NavLink>
-                    <NavLink to="/about" className={linkClass}>
-                        About
-                    </NavLink>
-                    <NavLink to="/contact" className={linkClass}>
-                        Contact
-                    </NavLink>
-                    <NavLink to="/order-history" className={linkClass}>
-                        Orders
-                    </NavLink>
+                {/* Desktop Nav */}
+                <div className="hidden lg:flex lg:gap-x-10">
+                    <NavLink to="/" className={linkClass}>Home</NavLink>
+                    <NavLink to="/men" className={linkClass}>Men</NavLink>
+                    <NavLink to="/women" className={linkClass}>Women</NavLink>
+                    <NavLink to="/kids" className={linkClass}>Kids</NavLink>
+                    <NavLink to="/about" className={linkClass}>Our Story</NavLink>
                 </div>
 
-                <div className="hidden lg:flex lg:flex-1 lg:justify-end items-center gap-6">
-                    {/* Search */}
-                    <form onSubmit={(e) => {
-                        e.preventDefault();
-                        if (searchQuery.trim()) {
-                            navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
-                        }
-                    }} className="relative group">
-                        <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-full px-3 py-2 transition-all duration-300 w-10 group-focus-within:w-64 focus-within:w-64 overflow-hidden">
-                            <button type="submit" className="p-1">
-                                <FiSearch className="text-xl text-gray-500 dark:text-gray-300" />
-                            </button>
+                {/* Right Icons */}
+                <div className="hidden lg:flex lg:flex-1 lg:justify-end items-center gap-4">
+
+                    {/* Search Bar */}
+                    <form
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            if (searchQuery.trim()) navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+                        }}
+                        className="relative hidden xl:block"
+                    >
+                        <div className="flex items-center bg-gray-100 dark:bg-gray-800/50 rounded-full px-4 py-2 border border-transparent focus-within:border-indigo-500 transition-all w-64">
+                            <FiSearch className="text-gray-400" />
                             <input
                                 type="text"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="Search..."
-                                className="bg-transparent border-none outline-none text-sm ml-2 text-gray-900 dark:text-white w-full opacity-0 group-focus-within:opacity-100 transition-opacity duration-200"
+                                placeholder="Search products..."
+                                className="bg-transparent border-none outline-none text-sm ml-2 text-gray-900 dark:text-white w-full placeholder-gray-500"
                             />
                         </div>
                     </form>
-                    {/* Dark Mode Toggle */}
+
+                    <div className="h-6 w-px bg-gray-200 dark:bg-gray-700 mx-2"></div>
+
+                    {/* Dark Mode */}
                     <button
                         onClick={() => setDarkMode(!darkMode)}
-                        className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
+                        className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition"
                     >
-                        {darkMode ? (
-                            <FiSun className="text-xl text-yellow-400" />
-                        ) : (
-                            <FiMoon className="text-xl text-gray-700 dark:text-gray-200" />
-                        )}
+                        {darkMode ? <FiSun className="w-5 h-5" /> : <FiMoon className="w-5 h-5" />}
                     </button>
 
-
-                    {/* Wishlist */}
-                    <NavLink
-                        to="/favorites"
-                        className="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition flex items-center justify-center"
-                    >
-                        <FiHeart className="text-xl text-gray-700 dark:text-white" />
+                    {/* Favorites */}
+                    <NavLink to="/favorites" className="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition">
+                        <FiHeart className="w-5 h-5" />
                         {favCount > 0 && (
-                            <span className="absolute -top-1 -right-1 bg-pink-500 text-white text-xs px-1.5 rounded-full">
+                            <span className="absolute top-0 right-0 h-4 w-4 flex items-center justify-center bg-red-500 text-white text-[10px] font-bold rounded-full ring-2 ring-white dark:ring-gray-900">
                                 {favCount}
                             </span>
                         )}
                     </NavLink>
 
                     {/* Cart */}
-                    <button
-                        onClick={() => setIsCartOpen(true)}
-                        className="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-                    >
-                        <FiShoppingCart className="text-xl text-gray-700 dark:text-white" />
+                    <button onClick={() => setIsCartOpen(true)} className="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition">
+                        <FiShoppingCart className="w-5 h-5" />
                         {cartCount > 0 && (
-                            <span className="absolute -top-1 -right-1 bg-indigo-600 text-white text-xs px-1.5 rounded-full">
+                            <span className="absolute top-0 right-0 h-4 w-4 flex items-center justify-center bg-indigo-600 text-white text-[10px] font-bold rounded-full ring-2 ring-white dark:ring-gray-900">
                                 {cartCount}
                             </span>
                         )}
                     </button>
 
-                    {/* User Profile */}
-                    <NavLink
-                        to="/login"
-                        className="w-full flex items-center gap-3 rounded-xl px-4 py-3 font-semibold text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-                    >
-                        <FiUser className="text-xl" />
-                        Account
+                    <NavLink to="/login" className="ml-2 flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-indigo-600 transition">
+                        <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                            <FiUser className="w-4 h-4" />
+                        </div>
                     </NavLink>
                 </div>
             </nav>
 
-            {/* Mobile Menu Overlay */}
+            {/* Mobile Menu */}
             {isMobileMenuOpen && (
-                <div className="lg:hidden fixed inset-0 z-50">
-                    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)}></div>
-                    <div className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white dark:bg-gray-900 p-6 sm:max-w-sm shadow-xl transition transform duration-300">
-                        <div className="flex items-center justify-between mb-6">
-                            <NavLink to="/" className="-m-1.5 p-1.5">
-                                <span className="sr-only">Your Company</span>
-                                <img
-                                    src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600"
-                                    alt=""
-                                    className="h-8 w-auto"
-                                />
-                            </NavLink>
-                            <button
-                                type="button"
-                                onClick={() => setIsMobileMenuOpen(false)}
-                                className="-m-2.5 rounded-md p-2.5 text-gray-700 dark:text-gray-200"
-                            >
-                                <span className="sr-only">Close menu</span>
-                                <svg
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="1.5"
-                                    className="size-6"
-                                >
-                                    <path d="M6 18 18 6M6 6l12 12" strokeLinecap="round" strokeLinejoin="round" />
-                                </svg>
+                <div className="fixed inset-0 z-50 lg:hidden">
+                    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)}></div>
+                    <div className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white dark:bg-gray-900 p-6 sm:max-w-sm shadow-2xl transform transition-transform duration-300">
+                        <div className="flex items-center justify-between mb-8">
+                            <span className="font-bold text-xl text-gray-900 dark:text-white">Menu</span>
+                            <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 text-gray-600 dark:text-gray-400">
+                                <FiX className="w-6 h-6" />
                             </button>
                         </div>
 
-                        <div className="flow-root">
-                            <div className="-my-6 divide-y divide-gray-200 dark:divide-gray-700">
-                                <div className="space-y-2 py-6">
-                                    {['Home', 'Men', 'Women', 'Kids', 'About', 'Contact'].map((item) => (
-                                        <NavLink
-                                            key={item}
-                                            to={item === 'Home' ? '/' : `/${item.toLowerCase()}`}
-                                            onClick={() => setIsMobileMenuOpen(false)}
-                                            className="block rounded-xl px-4 py-3 text-base font-semibold text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-                                        >
-                                            {item}
-                                        </NavLink>
-                                    ))}
-                                </div>
-
-                                <div className="py-6 space-y-4">
-                                    <button
-                                        onClick={() => setDarkMode(!darkMode)}
-                                        className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-base font-semibold text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-                                    >
-                                        {darkMode ? <FiSun className="text-xl text-yellow-400" /> : <FiMoon className="text-xl" />}
-                                        {darkMode ? "Light Mode" : "Dark Mode"}
-                                    </button>
-
+                        <div className="space-y-6">
+                            <div className="flex flex-col gap-4">
+                                {['Home', 'Men', 'Women', 'Kids', 'About', 'Contact'].map((item) => (
                                     <NavLink
-                                        to="/favorites"
+                                        key={item}
+                                        to={item === 'Home' ? '/' : `/${item.toLowerCase()}`}
                                         onClick={() => setIsMobileMenuOpen(false)}
-                                        className="flex items-center gap-3 rounded-xl px-4 py-3 font-semibold text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+                                        className={({ isActive }) => `text-lg font-medium ${isActive ? 'text-indigo-600' : 'text-gray-900 dark:text-gray-100'}`}
                                     >
-                                        <FiHeart className="text-xl" />
-                                        Wishlist ({favCount})
+                                        {item}
                                     </NavLink>
+                                ))}
+                            </div>
 
-                                    <button
-                                        onClick={() => { setIsCartOpen(true); setIsMobileMenuOpen(false); }}
-                                        className="w-full flex items-center gap-3 rounded-xl px-4 py-3 font-semibold text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-                                    >
-                                        <FiShoppingCart className="text-xl" />
-                                        Cart ({cartCount})
-                                    </button>
+                            <hr className="border-gray-100 dark:border-gray-800" />
 
-                                    <NavLink
-                                        to="/login"
-                                        onClick={() => setIsMobileMenuOpen(false)}
-                                        className="w-full flex items-center gap-3 rounded-xl px-4 py-3 font-semibold text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-                                    >
-                                        <FiUser className="text-xl" />
-                                        Account
-                                    </NavLink>
-                                </div>
+                            <div className="flex flex-col gap-4">
+                                <button onClick={() => setDarkMode(!darkMode)} className="flex items-center gap-3 text-gray-600 dark:text-gray-300">
+                                    {darkMode ? <FiSun /> : <FiMoon />} {darkMode ? "Light Mode" : "Dark Mode"}
+                                </button>
+                                <NavLink to="/login" className="flex items-center gap-3 text-gray-600 dark:text-gray-300">
+                                    <FiUser /> Account
+                                </NavLink>
                             </div>
                         </div>
                     </div>
                 </div>
             )}
-
-
-            {/* Scroll Progress Bar */}
-            <div className="w-full">
-                <div
-                    className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 transition-all duration-100 ease-linear"
-                    style={{ width: `${scrollProgress}%` }}
-                ></div>
-            </div>
         </header>
     );
 }

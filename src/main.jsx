@@ -49,15 +49,15 @@ const router = createBrowserRouter([
       },
       {
         path: "/men",
-        element: <CategoryPage categoryName="Men" apiCategory="men's clothing" />,
+        element: <CategoryPage categoryName="Men" type="men" />,
       },
       {
         path: "/women",
-        element: <CategoryPage categoryName="Women" apiCategory="women's clothing" />,
+        element: <CategoryPage categoryName="Women" type="women" />,
       },
       {
         path: "/kids",
-        element: <CategoryPage categoryName="Kids" apiCategory="electronics" />,
+        element: <CategoryPage categoryName="Kids" type="kids" />,
       },
       {
         path: "/search",

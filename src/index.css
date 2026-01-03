@@ -5,16 +5,25 @@
    THEME VARIABLES (GLOBAL)
 ================================ */
 @theme {
-  /* Backgrounds */
-  --color-normalbg: #f3f4f6;
-  --color-darkbg: #0f172a;
+  /* Backgrounds: Smoother off-whites and rich darks */
+  --color-normalbg: #f8fafc;
+  /* Slate-50 */
+  --color-darkbg: #0b0f19;
+  /* Deep rich dark */
 
-  /* Text colors */
-  --color-text-primary: #111827;
-  --color-text-secondary: #4b5563;
+  /* Text colors: High contrast yet soft */
+  --color-text-primary: #1e293b;
+  /* Slate-800 */
+  --color-text-secondary: #64748b;
+  /* Slate-500 */
 
-  --color-dark-text-primary: #e5e7eb;
-  --color-dark-text-secondary: #9ca3af;
+  --color-dark-text-primary: #f1f5f9;
+  /* Slate-100 */
+  --color-dark-text-secondary: #94a3b8;
+  /* Slate-400 */
+
+  /* Font */
+  --font-display: 'Plus Jakarta Sans', sans-serif;
 }
 
 /* ===============================
@@ -23,6 +32,7 @@
 body {
   background-color: var(--color-normalbg);
   color: var(--color-text-primary);
+  font-family: var(--font-display);
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
