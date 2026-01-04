@@ -12,9 +12,9 @@ const PromoSection = () => {
                         <img
                             src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80"
                             alt="Promo"
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-cover grayscale"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent"></div>
+                        <div className="absolute inset-0 bg-gradient-to-r from-gray-900 via-gray-900/80 to-transparent"></div>
                     </div>
 
                     {/* Content */}

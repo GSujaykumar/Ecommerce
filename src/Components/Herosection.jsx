@@ -33,13 +33,7 @@ const HeroSection = () => {
           <h1 className="text-5xl lg:text-7xl font-bold leading-tight text-gray-900 dark:text-white mb-6">
             Redefining <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">
-              <Texttype
-                words={["Modern Elegance", "Timeless Style", "Bold Fashion"]}
-                typingSpeed={100}
-                pauseDuration={2000}
-                showCursor={true}
-                cursorCharacter="|"
-              />
+              Modern Elegance
             </span>
           </h1>
 
@@ -53,8 +47,8 @@ const HeroSection = () => {
               Shop Now
             </Link>
 
-            <Link to="/about" className="px-8 py-4 rounded-full border border-gray-300 text-gray-900 font-semibold hover:border-gray-900 hover:bg-gray-50 transition-all dark:border-gray-600 dark:text-gray-300 dark:hover:border-white dark:hover:text-white dark:hover:bg-white/10">
-              View Lookbook
+            <Link to="/men" className="px-8 py-4 rounded-full border border-gray-300 text-gray-900 font-semibold hover:border-gray-900 hover:bg-gray-50 transition-all dark:border-gray-600 dark:text-gray-300 dark:hover:border-white dark:hover:text-white dark:hover:bg-white/10">
+              View All Products
             </Link>
           </div>
 
@@ -86,7 +80,7 @@ const HeroSection = () => {
           {/* Image Container */}
           <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white dark:border-gray-800 group">
             <img
-              src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2070&auto=format&fit=crop"
+              src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1"
               alt="Luxury Fashion Model"
               className="w-full h-[600px] object-cover transition-transform duration-700 group-hover:scale-105"
             />
@@ -94,7 +88,7 @@ const HeroSection = () => {
             {/* Overlay Tag */}
             <div className="absolute bottom-8 left-8 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md px-6 py-4 rounded-2xl shadow-lg transform transition-transform hover:-translate-y-2">
               <p className="text-sm text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Featured</p>
-              <p className="text-xl font-bold text-gray-900 dark:text-white">Winter Edition</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">Summer Edition</p>
             </div>
           </div>
         </motion.div>

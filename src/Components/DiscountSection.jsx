@@ -96,7 +96,7 @@ function DiscountSection() {
 
                                 <button
                                     onClick={() => addToCart(product)}
-                                    className="w-full mt-6 py-3 rounded-xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold hover:opacity-90 transition-opacity"
+                                    className="w-full mt-6 py-3 rounded-xl bg-gray-900 hover:bg-gray-800 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white font-bold transition-all"
                                 >
                                     Add to Cart
                                 </button>

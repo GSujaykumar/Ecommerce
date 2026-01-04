@@ -16,6 +16,8 @@ import OrderHistory from './Components/OrderHistory.jsx';
 import Payment from './Components/Payment.jsx';
 import CategoryPage from './Components/CategoryPage.jsx';
 import SearchResults from './Components/SearchResults.jsx';
+import Orders from './Components/Orders.jsx';
+
 
 const router = createBrowserRouter([
   {
@@ -74,6 +76,16 @@ const router = createBrowserRouter([
       {
         path: "/payment",
         element: <Payment />,
+      },
+      {
+        path: "/orders",
+        element: <Orders />,
+      },
+      // ... (remove Signup import at top)
+      // ... inside routes
+      {
+        path: "/signup",
+        element: <Login />,
       },
     ]
 

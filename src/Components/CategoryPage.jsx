@@ -73,7 +73,7 @@ function CategoryPage({ categoryName, apiCategory, type }) {
     };
 
     return (
-        <section className="bg-[var(--color-normalbg)] dark:bg-[var(--color-darkbg)] pt-8 pb-20 min-h-screen transition-colors duration-300">
+        <section className="bg-[var(--color-normalbg)] dark:bg-[var(--color-darkbg)] pt-24 pb-20 min-h-screen transition-colors duration-300">
             <div className="max-w-7xl mx-auto px-4 sm:px-6">
 
                 {/* Header & Controls */}
@@ -110,20 +110,20 @@ function CategoryPage({ categoryName, apiCategory, type }) {
                 <div className="flex gap-8 items-start">
                     {/* Sidebar Filters (Desktop) */}
                     <aside className={`
-                        fixed inset-0 z-40 bg-white dark:bg-[#0b0f19] p-6 transform transition-transform duration-300 md:static md:translate-x-0 md:w-64 md:border-none md:bg-transparent md:p-0 md:block
+                        fixed inset-0 z-40 bg-white dark:bg-[#0b0f19] p-8 transform transition-transform duration-300 md:static md:translate-x-0 md:w-72 md:border-none md:bg-transparent md:p-0 md:block
                         ${showFilters ? 'translate-x-0' : '-translate-x-full'}
                     `}>
-                        <div className="flex justify-between items-center md:hidden mb-6">
-                            <h3 className="text-lg font-bold">Filters</h3>
-                            <button onClick={() => setShowFilters(false)}><FiX size={24} /></button>
+                        <div className="flex justify-between items-center md:hidden mb-8">
+                            <h3 className="text-xl font-bold tracking-tight">Filters</h3>
+                            <button onClick={() => setShowFilters(false)} className="p-2 bg-gray-100 dark:bg-gray-800 rounded-full"><FiX size={20} /></button>
                         </div>
 
-                        <div className="space-y-6">
+                        <div className="space-y-10">
                             {/* Price Filter */}
-                            <div>
-                                <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4 uppercase tracking-wider">Price Range</h3>
+                            <div className="group">
+                                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Price Range</h3>
                                 <div className="space-y-4">
-                                    <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
+                                    <div className="flex items-center justify-between font-mono text-sm text-gray-900 dark:text-white">
                                         <span>${priceRange.min}</span>
                                         <span>${priceRange.max}</span>
                                     </div>
@@ -133,24 +133,44 @@ function CategoryPage({ categoryName, apiCategory, type }) {
                                         max="1000"
                                         value={priceRange.max}
                                         onChange={(e) => setPriceRange({ ...priceRange, max: Number(e.target.value) })}
-                                        className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-black dark:accent-white"
+                                        className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-800 accent-indigo-600 hover:accent-indigo-500 transition-all"
                                     />
-                                    <div className="flex gap-2">
-                                        <input
-                                            type="number"
-                                            value={priceRange.min}
-                                            onChange={(e) => setPriceRange({ ...priceRange, min: Number(e.target.value) })}
-                                            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-md text-sm text-[var(--color-text-primary)] dark:text-[var(--color-dark-text-primary)]"
-                                            placeholder="Min"
-                                        />
-                                        <input
-                                            type="number"
-                                            value={priceRange.max}
-                                            onChange={(e) => setPriceRange({ ...priceRange, max: Number(e.target.value) })}
-                                            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-md text-sm text-[var(--color-text-primary)] dark:text-[var(--color-dark-text-primary)]"
-                                            placeholder="Max"
-                                        />
-                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Availability Filter */}
+                            <div>
+                                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Availability</h3>
+                                <div className="space-y-3">
+                                    <label className="flex items-center gap-3 cursor-pointer group">
+                                        <div className="relative flex items-center">
+                                            <input type="checkbox" className="peer w-5 h-5 rounded border-2 border-gray-300 dark:border-gray-700 text-indigo-600 focus:ring-indigo-500 transition-all cursor-pointer checked:bg-indigo-600 checked:border-indigo-600" defaultChecked />
+                                        </div>
+                                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-indigo-600 transition-colors">In Stock</span>
+                                    </label>
+                                    <label className="flex items-center gap-3 cursor-pointer group">
+                                        <div className="relative flex items-center">
+                                            <input type="checkbox" className="peer w-5 h-5 rounded border-2 border-gray-300 dark:border-gray-700 text-indigo-600 focus:ring-indigo-500 transition-all cursor-pointer checked:bg-indigo-600 checked:border-indigo-600" />
+                                        </div>
+                                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-indigo-600 transition-colors">Out of Stock</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            {/* Rating Filter */}
+                            <div>
+                                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Min. Rating</h3>
+                                <div className="space-y-3">
+                                    {[4, 3, 2].map((stars) => (
+                                        <label key={stars} className="flex items-center gap-3 cursor-pointer group">
+                                            <div className="relative flex items-center">
+                                                <input type="checkbox" className="peer w-5 h-5 rounded border-2 border-gray-300 dark:border-gray-700 text-indigo-600 focus:ring-indigo-500 transition-all cursor-pointer checked:bg-indigo-600 checked:border-indigo-600" />
+                                            </div>
+                                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1 group-hover:text-yellow-500 transition-colors">
+                                                <span className="text-yellow-400 font-bold">{stars}★</span> & up
+                                            </span>
+                                        </label>
+                                    ))}
                                 </div>
                             </div>
                         </div>
@@ -167,9 +187,9 @@ function CategoryPage({ categoryName, apiCategory, type }) {
                     {/* Product Grid */}
                     <div className="flex-1">
                         {loading ? (
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {[...Array(6)].map((_, i) => (
-                                    <div key={i} className="h-80 bg-gray-200 dark:bg-slate-800 rounded-2xl animate-pulse"></div>
+                                    <div key={i} className="h-96 bg-gray-200 dark:bg-gray-800 rounded-3xl animate-pulse"></div>
                                 ))}
                             </div>
                         ) : filteredProducts.length > 0 ? (
@@ -177,7 +197,7 @@ function CategoryPage({ categoryName, apiCategory, type }) {
                                 variants={containerVariants}
                                 initial="hidden"
                                 animate="visible"
-                                className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
+                                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
                             >
                                 <AnimatePresence>
                                     {filteredProducts.map((product) => (

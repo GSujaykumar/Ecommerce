@@ -3,7 +3,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { ShopContext } from "../Context/ShopContext";
 
-import { FiShoppingCart, FiHeart, FiUser, FiSearch, FiMenu, FiX } from "react-icons/fi";
+import { FiShoppingCart, FiHeart, FiUser, FiSearch, FiMenu, FiX, FiEye, FiLogIn, FiMic } from "react-icons/fi";
 import { FiMoon, FiSun } from "react-icons/fi";
 
 
@@ -12,12 +12,24 @@ function Header() {
     const [searchQuery, setSearchQuery] = useState("");
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
+    const [isListening, setIsListening] = useState(false);
     const navigate = useNavigate();
 
-    const { cartItems, favoriteItems, setIsCartOpen } = useContext(ShopContext);
+    const { cartItems, favoriteItems, setIsCartOpen, user } = useContext(ShopContext);
 
     const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
     const favCount = favoriteItems.length;
+
+    const handleVoiceSearch = () => {
+        setIsListening(true);
+        // Simulate voice recognition delay
+        setTimeout(() => {
+            setIsListening(false);
+            const mockQuery = "Black Hoodie";
+            setSearchQuery(mockQuery);
+            navigate(`/search?q=${encodeURIComponent(mockQuery)}`);
+        }, 1500);
+    };
 
     useEffect(() => {
         if (darkMode) {
@@ -44,19 +56,19 @@ function Header() {
     return (
         <header
             className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${scrolled
-                    ? "bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-sm border-b border-gray-200/50 dark:border-gray-800/50"
-                    : "bg-transparent py-2"
+                ? "bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-sm border-b border-gray-200/50 dark:border-gray-800/50"
+                : "bg-transparent py-2"
                 }`}
         >
             <nav className="mx-auto flex max-w-7xl items-center justify-between p-4 lg:px-8">
-
                 {/* Logo */}
                 <div className="flex lg:flex-1">
-                    <NavLink to="/" className="-m-1.5 p-1.5 flex items-center gap-2">
-                        <div className="h-8 w-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">
-                            O
+                    <NavLink to="/" className="-m-1.5 p-1.5 flex items-center gap-2 group">
+                        <div className="h-10 w-10 bg-black rounded-full flex items-center justify-center overflow-hidden shadow-lg group-hover:rotate-180 transition-transform duration-700 relative">
+                            {/* Sharingan Image */}
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/Sharingan_triple.svg" alt="Sharingan" className="w-full h-full object-cover p-1" />
                         </div>
-                        <span className="font-bold text-xl tracking-tight text-gray-900 dark:text-white">Obito<span className="text-indigo-600">Store</span></span>
+                        <span className="font-bold text-xl tracking-tight text-gray-900 dark:text-white font-mono">OBITO<span className="text-red-600">STORE</span></span>
                     </NavLink>
                 </div>
 
@@ -78,29 +90,38 @@ function Header() {
                     <NavLink to="/men" className={linkClass}>Men</NavLink>
                     <NavLink to="/women" className={linkClass}>Women</NavLink>
                     <NavLink to="/kids" className={linkClass}>Kids</NavLink>
-                    <NavLink to="/about" className={linkClass}>Our Story</NavLink>
+                    <NavLink to="/about" className={linkClass}>About</NavLink>
+                    <NavLink to="/orders" className={linkClass}>Orders</NavLink>
                 </div>
 
                 {/* Right Icons */}
                 <div className="hidden lg:flex lg:flex-1 lg:justify-end items-center gap-4">
 
-                    {/* Search Bar */}
+                    {/* Search Bar - Animated */}
                     <form
                         onSubmit={(e) => {
                             e.preventDefault();
                             if (searchQuery.trim()) navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
                         }}
-                        className="relative hidden xl:block"
+                        className="relative hidden xl:block group"
                     >
-                        <div className="flex items-center bg-gray-100 dark:bg-gray-800/50 rounded-full px-4 py-2 border border-transparent focus-within:border-indigo-500 transition-all w-64">
-                            <FiSearch className="text-gray-400" />
+                        <div className="flex items-center bg-gray-100 dark:bg-gray-800/50 rounded-full px-4 py-2 border border-transparent focus-within:border-red-600 focus-within:ring-1 focus-within:ring-red-600 w-64 focus-within:w-96 transition-all duration-300 ease-in-out">
+                            <FiSearch className="text-gray-400 group-focus-within:text-red-600 transition-colors" />
                             <input
                                 type="text"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="Search products..."
+                                placeholder={isListening ? "Listening..." : "Search for anything..."}
                                 className="bg-transparent border-none outline-none text-sm ml-2 text-gray-900 dark:text-white w-full placeholder-gray-500"
                             />
+                            <button
+                                type="button"
+                                onClick={handleVoiceSearch}
+                                className={`ml-2 p-1.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition ${isListening ? 'text-red-600 animate-pulse' : 'text-gray-400'}`}
+                                title="Voice Search"
+                            >
+                                <FiMic className="w-4 h-4" />
+                            </button>
                         </div>
                     </form>
 
@@ -118,7 +139,7 @@ function Header() {
                     <NavLink to="/favorites" className="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition">
                         <FiHeart className="w-5 h-5" />
                         {favCount > 0 && (
-                            <span className="absolute top-0 right-0 h-4 w-4 flex items-center justify-center bg-red-500 text-white text-[10px] font-bold rounded-full ring-2 ring-white dark:ring-gray-900">
+                            <span className="absolute top-0 right-0 h-4 w-4 flex items-center justify-center bg-red-600 text-white text-[10px] font-bold rounded-full ring-2 ring-white dark:ring-gray-900">
                                 {favCount}
                             </span>
                         )}
@@ -134,10 +155,15 @@ function Header() {
                         )}
                     </button>
 
-                    <NavLink to="/login" className="ml-2 flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-indigo-600 transition">
-                        <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                            <FiUser className="w-4 h-4" />
-                        </div>
+                    {/* User Profile */}
+                    <NavLink to="/login" className="ml-2 flex items-center gap-2 text-sm font-semibold hover:text-indigo-600 transition">
+                        {user ? (
+                            <img src={user.avatar || "https://ui-avatars.com/api/?name=User"} alt="User" className="w-8 h-8 rounded-full border border-gray-200 dark:border-gray-700 object-cover" />
+                        ) : (
+                            <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 flex items-center justify-center hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition" title="Login">
+                                <FiLogIn className="w-5 h-5 ml-0.5" />
+                            </div>
+                        )}
                     </NavLink>
                 </div>
             </nav>

@@ -8,6 +8,10 @@ import PromoSection from "./PromoSection";
 import Checkout from "./Checkout";
 import Texttype from "./Texttype";
 import DiscountSection from "./DiscountSection";
+import Testimonials from "./Testimonials";
+import FlashSale from "./FlashSale";
+import StoreMap from "./StoreMap";
+import DeliveryStats from "./DeliveryStats";
 
 
 
@@ -15,13 +19,16 @@ const Home = () => {
     return (
         <div>
             <HeroSection />
+            <FlashSale />
+            <DeliveryStats />
             {/* <Categoriesection /> */}
             <FeaturedProducts />
             <PromoSection />
             <DiscountSection />
+            <StoreMap />
             <PromoBanner />
+            <Testimonials />
             <Texttype />
-            {/* <Checkout    /> */}
         </div>
     );
 };

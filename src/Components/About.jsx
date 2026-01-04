@@ -1,187 +1,115 @@
 import React from "react";
-import { FiShoppingBag, FiStar, FiTruck, FiUsers } from "react-icons/fi";
+import { FiShoppingBag, FiStar, FiTruck, FiGlobe, FiAward } from "react-icons/fi";
 import { useState, useEffect } from "react";
+import StoreMap from "./StoreMap";
+import Achievements from "./Achievements";
 
 const About = () => {
 
 
-    const Counter = ({ end, duration = 2000 }) => {
-        const [count, setCount] = useState(0);
-
-        useEffect(() => {
-            let start = 0;
-            const increment = end / (duration / 8);
-
-            const timer = setInterval(() => {
-                start += increment;
-                if (start >= end) {
-                    setCount(end);
-                    clearInterval(timer);
-                } else {
-                    setCount(Math.floor(start));
-                }
-            }, 16);
-
-            return () => clearInterval(timer);
-        }, [end, duration]);
-
-        return <span>{count}</span>;
-    };
-
     return (
-        <section className="bg-[var(--color-normalbg)] dark:bg-[var(--color-darkbg)] py-32">
-            <div className="max-w-7xl mx-auto px-6 lg:px-24 space-y-32">
+        <section className="bg-[var(--color-normalbg)] dark:bg-[var(--color-darkbg)] transition-colors duration-300">
 
-                {/* ===== HERO / INTRO ===== */}
+            {/* ===== HERO / INTRO ===== */}
+            <div className="max-w-7xl mx-auto px-6 lg:px-24 py-32 space-y-32">
                 <div className="grid md:grid-cols-2 gap-20 items-center">
                     <div>
+                        <div className="inline-block px-4 py-1.5 mb-6 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 font-bold rounded-full text-xs uppercase tracking-wider">
+                            Since 2023
+                        </div>
                         <h1 className="text-5xl font-extrabold text-gray-900 leading-tight dark:text-white">
-                            About <span className="text-black dark:text-indigo-400">LuxeMart</span>
+                            We Are <span className="text-black dark:text-red-500">ObitoStore</span>
                         </h1>
 
-                        <p className="mt-6 text-lg text-gray-700 dark:text-gray-300">
-                            LuxeMart is a modern e-commerce platform built for customers who
-                            value quality, authenticity, and refined design. We bring together
-                            premium fashion, lifestyle, and home essentials — all in one place.
+                        <p className="mt-6 text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+                            Born from a passion for bold aesthetics and high-performance gear, ObitoStore isn't just a marketplace—it's a movement. We curate the finest collection of urban techwear, streetwear, and lifestyle essentials for the modern visionary.
                         </p>
 
-                        <p className="mt-4 text-lg text-gray-700 dark:text-gray-300">
-                            From everyday wear to luxury essentials, our products are carefully
-                            selected to meet the highest standards of craftsmanship, comfort,
-                            and style.
+                        <p className="mt-4 text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+                            Our mission is simple: To empower your individuality through designs that break the mold. Authenticity is our creed, and quality is our promise.
                         </p>
 
                         <div className="mt-10">
-                            <button className="bg-black dark:bg-white text-white dark:text-black px-8 py-4 rounded-xl font-semibold hover:opacity-90 transition">
-                                Explore Our Collection
+                            <button className="bg-black dark:bg-white text-white dark:text-black px-8 py-4 rounded-xl font-semibold hover:scale-105 transition shadow-lg">
+                                Join the Movement
                             </button>
                         </div>
                     </div>
 
-                    <div>
+                    <div className="relative">
+                        <div className="absolute inset-0 border-2 border-gray-200 dark:border-red-500/20 rounded-3xl transform translate-x-4 translate-y-4"></div>
                         <img
-                            src="https://images.pexels.com/photos/298863/pexels-photo-298863.jpeg?auto=compress&cs=tinysrgb&w=1200"
-                            alt="Ecommerce lifestyle"
-                            className="rounded-3xl shadow-2xl w-full object-cover"
+                            src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?q=80&w=2574&auto=format&fit=crop"
+                            alt="Fashion Studio"
+                            className="rounded-3xl shadow-2xl w-full h-[500px] object-cover relative z-10 grayscale hover:grayscale-0 transition-all duration-700"
                         />
                     </div>
                 </div>
+            </div>
 
-                {/* ===== TRUST STATS ===== */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-10 text-center">
-                    <div>
-                        <h3 className="text-4xl font-extrabold text-black dark:text-[var(--color-dark-text-primary)]">
-                            <Counter end={50} />K+
-                        </h3>
-                        <p className="mt-2 text-gray-600">Happy Customers</p>
-                    </div>
+            {/* ===== ACHIEVEMENTS & STATS ===== */}
+            <Achievements />
 
-                    <div>
-                        <h3 className="text-4xl font-extrabold text-black dark:text-[var(--color-dark-text-primary)]">
-                            <Counter end={5} />K+
-                        </h3>
-                        <p className="mt-2 text-gray-600">Premium Products</p>
-                    </div>
+            {/* ===== GLOBAL MAP ===== */}
+            <StoreMap />
 
-                    <div>
-                        <h3 className="text-4xl font-extrabold text-black dark:text-[var(--color-dark-text-primary)]">
-                            <Counter end={30} />+
-                        </h3>
-                        <p className="mt-2 text-gray-600">Countries Served</p>
-                    </div>
-
-                    <div>
-                        <h3 className="text-4xl font-extrabold text-black dark:text-[var(--color-dark-text-primary)]">
-                            24/7
-                        </h3>
-                        <p className="mt-2 text-gray-600">Customer Support</p>
-                    </div>
-                </div>
-
+            <div className="max-w-7xl mx-auto px-6 lg:px-24 py-32 space-y-32">
 
                 {/* ===== WHY CHOOSE US ===== */}
                 <div>
-                    <h2 className="text-4xl font-extrabold text-gray-900 text-center">
-                        Why Choose LuxeMart
+                    <h2 className="text-4xl font-extrabold text-gray-900 dark:text-white text-center">
+                        The <span className="dark:text-red-500">Obito</span> Standard
                     </h2>
 
                     <div className="mt-16 grid md:grid-cols-3 gap-10">
-                        <div className="bg-gray-50 p-8 rounded-2xl hover:shadow-xl transition">
-                            <div className="bg-black text-white p-4 rounded-full w-fit">
-                                <FiShoppingBag size={26} />
+                        <div className="bg-gray-50 dark:bg-gray-900 p-8 rounded-2xl hover:bg-white dark:hover:bg-gray-800 hover:shadow-xl transition border border-transparent hover:border-gray-100 dark:hover:border-gray-700 group">
+                            <div className="bg-black dark:bg-red-600 text-white p-4 rounded-xl w-fit group-hover:scale-110 transition">
+                                <FiAward size={26} />
                             </div>
-                            <h4 className="mt-6 text-xl font-semibold text-gray-900">
-                                Curated Collections
+                            <h4 className="mt-6 text-xl font-bold text-gray-900 dark:text-white">
+                                Authentic Quality
                             </h4>
-                            <p className="mt-3 text-gray-600">
-                                Every product is carefully selected to ensure premium quality,
-                                durability, and timeless design.
+                            <p className="mt-3 text-gray-600 dark:text-gray-400 leading-relaxed">
+                                We don't do knock-offs. Every item is verified authentic and sourced directly from top-tier manufacturers.
                             </p>
                         </div>
 
-                        <div className="bg-gray-50 p-8 rounded-2xl hover:shadow-xl transition">
-                            <div className="bg-black text-white p-4 rounded-full w-fit">
-                                <FiTruck size={26} />
+                        <div className="bg-gray-50 dark:bg-gray-900 p-8 rounded-2xl hover:bg-white dark:hover:bg-gray-800 hover:shadow-xl transition border border-transparent hover:border-gray-100 dark:hover:border-gray-700 group">
+                            <div className="bg-black dark:bg-red-600 text-white p-4 rounded-xl w-fit group-hover:scale-110 transition">
+                                <FiGlobe size={26} />
                             </div>
-                            <h4 className="mt-6 text-xl font-semibold text-gray-900">
-                                Fast & Reliable Delivery
+                            <h4 className="mt-6 text-xl font-bold text-gray-900 dark:text-white">
+                                Worldwide Shipping
                             </h4>
-                            <p className="mt-3 text-gray-600">
-                                We partner with trusted logistics providers to deliver your
-                                orders safely and on time.
+                            <p className="mt-3 text-gray-600 dark:text-gray-400 leading-relaxed">
+                                From Tokyo to New York, we deliver swiftly to over 50 countries with real-time tracking.
                             </p>
                         </div>
 
-                        <div className="bg-gray-50 p-8 rounded-2xl hover:shadow-xl transition">
-                            <div className="bg-black text-white p-4 rounded-full w-fit">
+                        <div className="bg-gray-50 dark:bg-gray-900 p-8 rounded-2xl hover:bg-white dark:hover:bg-gray-800 hover:shadow-xl transition border border-transparent hover:border-gray-100 dark:hover:border-gray-700 group">
+                            <div className="bg-black dark:bg-red-600 text-white p-4 rounded-xl w-fit group-hover:scale-110 transition">
                                 <FiStar size={26} />
                             </div>
-                            <h4 className="mt-6 text-xl font-semibold text-gray-900">
-                                Premium Experience
+                            <h4 className="mt-6 text-xl font-bold text-gray-900 dark:text-white">
+                                Customer First
                             </h4>
-                            <p className="mt-3 text-gray-600">
-                                From browsing to checkout, we focus on a smooth, secure, and
-                                enjoyable shopping experience.
+                            <p className="mt-3 text-gray-600 dark:text-gray-400 leading-relaxed">
+                                24/7 dedicated support team ready to assist you with sizing, styling, and returns.
                             </p>
                         </div>
                     </div>
                 </div>
 
-                {/* ===== BRAND STORY ===== */}
-                <div className="grid md:grid-cols-2 gap-20 items-center">
-                    <img
-                        src="https://images.pexels.com/photos/3965545/pexels-photo-3965545.jpeg?auto=compress&cs=tinysrgb&w=1200"
-                        alt="Brand story"
-                        className="rounded-3xl shadow-xl w-full object-cover"
-                    />
-
-                    <div>
-                        <h2 className="text-4xl font-extrabold text-gray-900">
-                            Built for Modern Shoppers
-                        </h2>
-                        <p className="mt-6 text-lg text-gray-700">
-                            LuxeMart was created to bridge the gap between luxury brands and
-                            everyday shopping. We believe premium products should be accessible,
-                            transparent, and trustworthy.
-                        </p>
-                        <p className="mt-4 text-lg text-gray-700">
-                            Our platform is continuously evolving to bring you better design,
-                            faster performance, and a seamless checkout experience.
-                        </p>
+                {/* ===== FOUNDER / VISION ===== */}
+                <div className="bg-black text-white rounded-[3rem] p-12 lg:p-24 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-full h-full opacity-20">
+                        <img src="https://images.unsplash.com/photo-1550989460-0adf9ea622e2?q=80&w=2574&auto=format&fit=crop" className="w-full h-full object-cover" />
                     </div>
-                </div>
-
-                {/* ===== FINAL CTA ===== */}
-                <div className="text-center">
-                    <h2 className="text-4xl font-extrabold text-gray-900">
-                        Start Your Premium Shopping Journey
-                    </h2>
-                    <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-                        Discover premium products trusted by thousands of customers worldwide.
-                    </p>
-                    <button className="mt-8 bg-black text-white px-10 py-4 rounded-xl font-semibold hover:bg-gray-900 transition">
-                        Shop with LuxeMart
-                    </button>
+                    <div className="relative z-10 max-w-2xl">
+                        <h2 className="text-4xl lg:text-5xl font-bold mb-6">"Fashion is the armor to survive the reality of everyday life."</h2>
+                        <p className="text-xl text-gray-300 mb-8">– Bill Cunningham</p>
+                        <p className="text-gray-400">At ObitoStore, we believe your clothes tell your story before you speak. Make it a legend.</p>
+                    </div>
                 </div>
 
             </div>

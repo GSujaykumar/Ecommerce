@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import ProductCard from "./ProductCard";
 import { fetchProducts } from "../api";
 import { motion } from "framer-motion";
+import { ProductSkeleton } from "./Skeleton";
 
 function FeaturedProducts() {
   const [allProducts, setAllProducts] = useState([]);
@@ -66,8 +67,8 @@ function FeaturedProducts() {
         {/* Product Grid */}
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="h-96 bg-gray-200 dark:bg-gray-800 rounded-3xl animate-pulse"></div>
+            {[...Array(8)].map((_, i) => (
+              <ProductSkeleton key={i} />
             ))}
           </div>
         ) : (

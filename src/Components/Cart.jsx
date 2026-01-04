@@ -6,7 +6,7 @@ import { formatPrice } from "../utils";
 import { FiX, FiShoppingBag, FiTrash2 } from "react-icons/fi";
 
 function Cart() {
-  const { cartItems, removeFromCart, isCartOpen, setIsCartOpen } = useContext(ShopContext);
+  const { cartItems, removeFromCart, updateQuantity, isCartOpen, setIsCartOpen } = useContext(ShopContext);
   const navigate = useNavigate();
 
   const subtotalUSD = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
@@ -108,9 +108,19 @@ function Cart() {
                                 </div>
                                 <div className="flex flex-1 items-end justify-between text-sm">
                                   <div className="flex items-center gap-3 border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1">
-                                    <button className="text-gray-500 hover:text-black dark:hover:text-white px-2">-</button>
+                                    <button
+                                      onClick={() => updateQuantity(product.id, product.quantity - 1)}
+                                      className="text-gray-500 hover:text-black dark:hover:text-white px-2"
+                                    >
+                                      -
+                                    </button>
                                     <span className="font-medium">{product.quantity}</span>
-                                    <button className="text-gray-500 hover:text-black dark:hover:text-white px-2">+</button>
+                                    <button
+                                      onClick={() => updateQuantity(product.id, product.quantity + 1)}
+                                      className="text-gray-500 hover:text-black dark:hover:text-white px-2"
+                                    >
+                                      +
+                                    </button>
                                   </div>
 
                                   <div className="flex">

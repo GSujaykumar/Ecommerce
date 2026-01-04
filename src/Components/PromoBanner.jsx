@@ -26,7 +26,7 @@ function PromoBanner() {
     >
       {/* Dynamic Background with Particles */}
       <div className="absolute inset-0 bg-black">
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-900 via-indigo-900 to-black opacity-80" />
+        {/* Removed Gradient as requested */}
         {[...Array(20)].map((_, i) => (
           <motion.div
             key={i}

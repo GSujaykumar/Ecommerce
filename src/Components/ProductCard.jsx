@@ -1,12 +1,14 @@
 
 import { useContext } from "react";
-import { FiHeart, FiShoppingCart } from "react-icons/fi";
+import { FiHeart, FiShoppingCart, FiEye } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { ShopContext } from "../Context/ShopContext";
+import { useQuickView } from "../Context/QuickViewContext";
 import { formatPrice } from "../utils";
 
 function ProductCard({ product }) {
   const { addToCart, toggleFavorite, favoriteItems } = useContext(ShopContext);
+  const { openQuickView } = useQuickView();
 
   if (!product) return null;
 
@@ -24,16 +26,24 @@ function ProductCard({ product }) {
       </button>
 
       {/* Image */}
-      <Link to={`/product/${product.id}`} className="block">
-        <div className="overflow-hidden h-72 w-full flex items-center justify-center bg-white p-6 relative">
-          <div className="absolute inset-0 bg-gray-50/50 mix-blend-multiply"></div>
+      <div className="block relative cursor-pointer">
+        <div className="overflow-hidden h-72 w-full flex items-center justify-center bg-white dark:bg-gray-800 p-6 relative">
+          <div className="absolute inset-0 bg-gray-50/50 mix-blend-multiply dark:hidden"></div>
           <img
             src={product.image}
             alt={product.title}
             className="h-full w-auto object-contain z-10 group-hover:scale-105 transition duration-500"
           />
+
+          {/* Quick View Overlay Button */}
+          <button
+            onClick={(e) => { e.preventDefault(); openQuickView(product); }}
+            className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/90 dark:bg-black/80 backdrop-blur-sm text-black dark:text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 z-20 flex items-center gap-2 whitespace-nowrap"
+          >
+            <FiEye size={16} /> Quick View
+          </button>
         </div>
-      </Link>
+      </div>
 
       {/* Content */}
       <div className="p-5 flex flex-col flex-grow bg-white dark:bg-[#0b0f19]">
@@ -42,6 +52,8 @@ function ProductCard({ product }) {
             {product.title}
           </h3>
         </Link>
+
+        {/* ... Rest of card content ... */}
 
         <p className="text-xs text-gray-500 mt-2 capitalize font-medium tracking-wide">
           {product.category}
