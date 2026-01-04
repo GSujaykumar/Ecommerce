@@ -10,7 +10,7 @@ import Texttype from "./Texttype";
 import DiscountSection from "./DiscountSection";
 import Testimonials from "./Testimonials";
 import FlashSale from "./FlashSale";
-import StoreMap from "./StoreMap";
+
 import DeliveryStats from "./DeliveryStats";
 
 
