@@ -35,24 +35,24 @@ const About = () => {
                 {/* ===== HERO / INTRO ===== */}
                 <div className="grid md:grid-cols-2 gap-20 items-center">
                     <div>
-                        <h1 className="text-5xl font-extrabold text-gray-900 leading-tight dark:text-[var(--color-dark-text-primary)]">
-                            About <span className="text-black dark:text-[var(--color-dark-text-primary)]">LuxeMart</span>
+                        <h1 className="text-5xl font-extrabold text-gray-900 leading-tight dark:text-white">
+                            About <span className="text-black dark:text-indigo-400">LuxeMart</span>
                         </h1>
 
-                        <p className="mt-6 text-lg text-gray-700 dark:text-[var(--color-dark-text-secondary)]">
+                        <p className="mt-6 text-lg text-gray-700 dark:text-gray-300">
                             LuxeMart is a modern e-commerce platform built for customers who
                             value quality, authenticity, and refined design. We bring together
                             premium fashion, lifestyle, and home essentials — all in one place.
                         </p>
 
-                        <p className="mt-4 text-lg text-gray-700 dark:text-[var(--color-dark-text-secondary)]">
+                        <p className="mt-4 text-lg text-gray-700 dark:text-gray-300">
                             From everyday wear to luxury essentials, our products are carefully
                             selected to meet the highest standards of craftsmanship, comfort,
                             and style.
                         </p>
 
                         <div className="mt-10">
-                            <button className="bg-black text-white px-8 py-4 rounded-xl font-semibold hover:bg-white-900 transition">
+                            <button className="bg-black dark:bg-white text-white dark:text-black px-8 py-4 rounded-xl font-semibold hover:opacity-90 transition">
                                 Explore Our Collection
                             </button>
                         </div>

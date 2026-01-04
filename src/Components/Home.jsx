@@ -4,6 +4,7 @@ import HeroSection from "./Herosection";
 import ProductCard from "./ProductCard";
 import FeaturedProducts from "./FeaturedProducts";
 import PromoBanner from "./PromoBanner";
+import PromoSection from "./PromoSection";
 import Checkout from "./Checkout";
 import Texttype from "./Texttype";
 import DiscountSection from "./DiscountSection";
@@ -16,6 +17,7 @@ const Home = () => {
             <HeroSection />
             {/* <Categoriesection /> */}
             <FeaturedProducts />
+            <PromoSection />
             <DiscountSection />
             <PromoBanner />
             <Texttype />

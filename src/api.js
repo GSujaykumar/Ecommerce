@@ -26,9 +26,18 @@ const normalizeDummyJSON = (product) => ({
 
 export const fetchProducts = async () => {
     try {
-        const response = await fetch(FAKESTORE_URL);
-        const data = await response.json();
-        return data.map(normalizeFakeStore);
+        const [fsRes, djRes] = await Promise.all([
+            fetch(FAKESTORE_URL),
+            fetch(`${DUMMYJSON_URL}?limit=20`)
+        ]);
+
+        const fsData = await fsRes.json();
+        const djData = await djRes.json();
+
+        return [
+            ...fsData.map(normalizeFakeStore),
+            ...djData.products.map(normalizeDummyJSON)
+        ];
     } catch (error) {
         console.error("Error fetching products:", error);
         return [];
@@ -96,7 +105,7 @@ export const fetchKidsProducts = async () => {
         ]);
         const data1 = await res1.json();
         const data2 = await res2.json();
-        
+
         const combined = [...data1.products, ...data2.products];
         return combined.map(normalizeDummyJSON);
     } catch (error) {
