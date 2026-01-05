@@ -10,7 +10,7 @@ import QuickViewModal from './Components/QuickViewModal'
 import { Outlet } from 'react-router-dom'
 import { ToastProvider } from './Context/ToastContext'
 import { QuickViewProvider } from './Context/QuickViewContext'
-import ScrollToTop from "./components/ScrollToTop";
+import ScrollToTop from "./Components/ScrollToTop";
 
 
 
