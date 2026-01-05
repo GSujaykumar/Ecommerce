@@ -11,7 +11,7 @@ import DiscountSection from "./DiscountSection";
 import Testimonials from "./Testimonials";
 import FlashSale from "./FlashSale";
 
-import StoreMap from "./StoreMap";
+
 import DeliveryStats from "./DeliveryStats";
 
 
@@ -26,7 +26,7 @@ const Home = () => {
             <FeaturedProducts />
             <PromoSection />
             <DiscountSection />
-            <StoreMap />
+
             <PromoBanner />
             <Testimonials />
             <Texttype />
