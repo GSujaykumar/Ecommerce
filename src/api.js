@@ -1,115 +1,145 @@
+import axios from 'axios';
 
-const FAKESTORE_URL = 'https://fakestoreapi.com/products';
-const DUMMYJSON_URL = 'https://dummyjson.com/products';
+// GATEWAY URL
+const API_URL = 'http://localhost:8080/api';
 
-// Helper to normalize FakeStoreAPI data
-const normalizeFakeStore = (product) => ({
-    id: `fs-${product.id}`, // specific prefix to avoid collision
-    title: product.title,
-    price: product.price,
-    description: product.description,
-    category: product.category,
-    image: product.image,
-    rating: product.rating
+const api = axios.create({
+    baseURL: API_URL,
+    headers: {
+        'Content-Type': 'application/json',
+    },
 });
 
-// Helper to normalize DummyJSON data
-const normalizeDummyJSON = (product) => ({
-    id: `dj-${product.id}`,
-    title: product.title,
-    price: product.price,
-    description: product.description,
-    category: product.category,
-    image: product.thumbnail, // Mapping thumbnail to image
-    rating: { rate: product.rating, count: product.stock } // normalizing rating structure roughly
-});
-
-export const fetchProducts = async () => {
-    try {
-        const [fsRes, djRes] = await Promise.all([
-            fetch(FAKESTORE_URL),
-            fetch(`${DUMMYJSON_URL}?limit=20`)
-        ]);
-
-        const fsData = await fsRes.json();
-        const djData = await djRes.json();
-
-        return [
-            ...fsData.map(normalizeFakeStore),
-            ...djData.products.map(normalizeDummyJSON)
-        ];
-    } catch (error) {
-        console.error("Error fetching products:", error);
-        return [];
+api.interceptors.request.use((config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
     }
-};
+    return config;
+});
 
-export const fetchProductById = async (id) => {
-    // Determine source based on ID prefix or try both
+// --- HELPER MAPPERS ---
+const mapBackendProductToFrontend = (p) => ({
+    id: p.id,
+    title: p.name,          // Backend: name, Frontend: title
+    description: p.description,
+    price: p.price,
+    image: p.imageUrl,      // Backend: imageUrl, Frontend: image
+    category: "General",    // Backend doesn't have category yet
+    rating: { rate: 4.5, count: 10 } // Mock rating
+});
+
+// --- PRODUCTS ---
+export const getAllProducts = async () => {
     try {
-        if (String(id).startsWith('dj-')) {
-            const realId = id.replace('dj-', '');
-            const response = await fetch(`${DUMMYJSON_URL}/${realId}`);
-            const data = await response.json();
-            return normalizeDummyJSON(data);
-        } else {
-            const realId = String(id).replace('fs-', '');
-            const response = await fetch(`${FAKESTORE_URL}/${realId}`);
-            const data = await response.json();
-            return normalizeFakeStore(data);
-        }
+        const response = await api.get('/products');
+        return response.data.map(mapBackendProductToFrontend);
     } catch (error) {
-        console.error("Error fetching product:", error);
-        return null;
+        console.error("Backend Error (Products):", error);
+        return fetchFallbackProducts(); // Fallback
     }
 };
 
 export const fetchProductsByCategory = async (category) => {
+    // For now, fetch all and filtr since backend doesn't support category filtering yet
+    const products = await getAllProducts();
+    if (!category || category === 'all') return products;
+    return products.filter(p => p.category.toLowerCase() === category.toLowerCase());
+};
+
+// --- AUTH ---
+export const loginUser = async (username, password) => {
+    // START: MOCK LOGIN (Replace with Keycloak JS later)
+    // We return a real JWT structure if possible, or a placeholder
+    return {
+        token: "mock-jwt-token-access-granted",
+        user: {
+            name: "Test User",
+            email: "user@example.com",
+            id: "user-123"
+        }
+    };
+    // END: MOCK LOGIN
+};
+
+// --- CART ---
+export const getCart = async () => {
     try {
-        const response = await fetch(`${FAKESTORE_URL}/category/${category}`);
-        const data = await response.json();
-        return data.map(normalizeFakeStore);
+        const response = await api.get('/cart');
+        // Map backend cart items to frontend structure if needed
+        return response.data;
     } catch (error) {
-        console.error(`Error fetching products for category ${category}:`, error);
+        console.warn("Backend Error (Cart):", error);
+        return { items: [], totalAmount: 0 };
+    }
+};
+
+export const addToCart = async (product, quantity = 1) => {
+    try {
+        // Map Frontend Product -> Backend CartItem Request
+        const item = {
+            skuCode: product.title.toLowerCase().replace(/\s+/g, '_') + "-" + product.id,
+            productName: product.title,
+            quantity: quantity,
+            price: product.price,
+            imageUrl: product.image
+        };
+        const response = await api.post('/cart', item);
+        return response.data;
+    } catch (error) {
+        console.error("Backend Error (AddToCart):", error);
+        // Fallback for demo: Return a mock cart
+        return { items: [item], totalAmount: product.price * quantity };
+    }
+};
+
+// --- ORDERS ---
+export const placeOrder = async (cartItems, total) => {
+    try {
+        const orderRequest = {
+            orderLineItemsDtoList: cartItems.map(item => ({
+                skuCode: item.skuCode || item.id || item.productName, // Preferred: skuCode, then id (which is skuCode in ShopContext), then name
+                price: item.price,
+                quantity: item.quantity
+            }))
+        };
+        const response = await api.post('/orders', orderRequest);
+        return response.data; // Order Number
+    } catch (error) {
+        console.error("Backend Error (Order):", error);
+        // Fallback:
+        return "ORD-" + Math.floor(Math.random() * 100000);
+    }
+};
+
+export const getMyOrders = async () => {
+    try {
+        const response = await api.get('/orders');
+        return response.data;
+    } catch (error) {
+        console.warn("Backend Error (Get Orders):", error);
         return [];
     }
 };
 
-// Specialized fetchers for Routes
-export const fetchMensProducts = async () => {
-    try {
-        const response = await fetch(`${FAKESTORE_URL}/category/men's clothing`);
-        const data = await response.json();
-        return data.map(normalizeFakeStore);
-    } catch (error) {
-        return [];
-    }
-};
 
-export const fetchWomensProducts = async () => {
-    try {
-        const response = await fetch(`${FAKESTORE_URL}/category/women's clothing`);
-        const data = await response.json();
-        return data.map(normalizeFakeStore);
-    } catch (error) {
-        return [];
-    }
-};
+// Fallback Logic
+export const fetchProducts = async () => getAllProducts(); // Alias for old code
 
-export const fetchKidsProducts = async () => {
+const fetchFallbackProducts = async () => {
     try {
-        // Using DummyJSON 'tops' and 'sunglasses' mixed as 'Kids' for demo
-        const [res1, res2] = await Promise.all([
-            fetch(`${DUMMYJSON_URL}/category/tops`),
-            fetch(`${DUMMYJSON_URL}/category/sunglasses`)
-        ]);
-        const data1 = await res1.json();
-        const data2 = await res2.json();
-
-        const combined = [...data1.products, ...data2.products];
-        return combined.map(normalizeDummyJSON);
-    } catch (error) {
-        console.error("Error fetching kids products:", error);
+        const res = await fetch('https://fakestoreapi.com/products');
+        const data = await res.json();
+        return data.map(p => ({
+            id: p.id,
+            title: p.title,
+            description: p.description,
+            price: p.price,
+            image: p.image,
+            category: p.category,
+            rating: p.rating
+        }));
+    } catch (e) {
         return [];
     }
 };

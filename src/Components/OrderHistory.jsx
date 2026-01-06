@@ -2,6 +2,7 @@
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { ShopContext } from '../Context/ShopContext';
+import { formatPrice } from '../utils'; // Import formatPrice
 
 export default function OrderHistory() {
     const { orders } = useContext(ShopContext);
@@ -61,13 +62,23 @@ export default function OrderHistory() {
                                                 <dd className="sm:mt-1">{order.total}</dd>
                                             </div>
                                         </dl>
-                                        <Link
-                                            to="/order-tracking"
-                                            className="mt-6 flex w-full items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:w-auto dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600 transition"
-                                        >
-                                            Track Order
-                                            <span className="sr-only">for order {order.id}</span>
-                                        </Link>
+                                        <div className="mt-6 flex flex-col sm:flex-row gap-3 sm:mt-0">
+                                            <button
+                                                onClick={() => {
+                                                    // This would ideally open the specific invoice for this older order
+                                                    import('../utils/invoiceGenerator').then(mod => mod.downloadInvoice(order));
+                                                }}
+                                                className="flex w-full items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600 transition"
+                                            >
+                                                Invoice
+                                            </button>
+                                            <Link
+                                                to="/order-tracking"
+                                                className="flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto transition"
+                                            >
+                                                Track Order
+                                            </Link>
+                                        </div>
                                     </div>
 
                                     <table className="mt-4 w-full text-gray-500 sm:mt-6">
@@ -104,16 +115,31 @@ export default function OrderHistory() {
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td className="hidden py-6 pr-8 sm:table-cell dark:text-gray-300">{item.price}</td>
+                                                    <td className="hidden py-6 pr-8 sm:table-cell dark:text-gray-300">{formatPrice(item.price)}</td>
                                                     <td className="hidden py-6 sm:table-cell">
-                                                        <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-300 capitalize">
-                                                            {order.status}
-                                                        </span>
+                                                        <div className="flex items-center gap-2">
+                                                            <span className={`inline-block h-2 w-2 rounded-full ${order.status === 'Delivered' ? 'bg-green-500' :
+                                                                order.status === 'Processing' ? 'bg-yellow-500' : 'bg-blue-500'
+                                                                }`} />
+                                                            <span className="text-sm font-medium text-gray-700 dark:text-gray-200 capitalize">
+                                                                {order.status}
+                                                            </span>
+                                                        </div>
+                                                        <div className="mt-1 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
+                                                            <div
+                                                                className={`h-1.5 rounded-full ${order.status === 'Delivered' ? 'bg-green-500 w-full' :
+                                                                    order.status === 'Processing' ? 'bg-yellow-500 w-1/3' : 'bg-blue-500 w-2/3'
+                                                                    }`}
+                                                            />
+                                                        </div>
                                                     </td>
                                                     <td className="whitespace-nowrap py-6 text-right font-medium">
-                                                        <a href="#" className="text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">
-                                                            View<span className="hidden lg:inline"> Product</span><span className="sr-only">, {item.name}</span>
-                                                        </a>
+                                                        <Link
+                                                            to={`/product/${item.id}`} // Assuming item.id exists and links to product
+                                                            className="text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 hover:underline"
+                                                        >
+                                                            Buy Again
+                                                        </Link>
                                                     </td>
                                                 </tr>
                                             ))}

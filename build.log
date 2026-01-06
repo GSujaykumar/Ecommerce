@@ -1,0 +1,29 @@
+
+> ecommercereact@0.0.0 build
+> vite build
+
+[36mvite v7.2.4 [32mbuilding client environment for production...[36m[39m
+transforming...
+[32m✓[39m 1191 modules transformed.
+[31m✗[39m Build failed in 4.44s
+[31merror during build:
+[31msrc/Components/FlashSale.jsx (5:9): "fetchProductsByCategory" is not exported by "src/api.js", imported by "src/Components/FlashSale.jsx".[31m
+file: [36mC:/Users/admin/Desktop/EcommerReactUI/EcommerceReact/src/Components/FlashSale.jsx:5:9[31m
+[33m
+3: import { FiClock, FiZap } from "react-icons/fi";
+4: import { formatPrice } from "../utils";
+5: import { fetchProductsByCategory } from "../api";
+            ^
+6: 
+7: const FlashSale = () => {
+[31m
+    at getRollupError (file:///C:/Users/admin/Desktop/EcommerReactUI/EcommerceReact/node_modules/rollup/dist/es/shared/parseAst.js:401:41)
+    at error (file:///C:/Users/admin/Desktop/EcommerReactUI/EcommerceReact/node_modules/rollup/dist/es/shared/parseAst.js:397:42)
+    at Module.error (file:///C:/Users/admin/Desktop/EcommerReactUI/EcommerceReact/node_modules/rollup/dist/es/shared/node-entry.js:16956:16)
+    at Module.traceVariable (file:///C:/Users/admin/Desktop/EcommerReactUI/EcommerceReact/node_modules/rollup/dist/es/shared/node-entry.js:17412:29)
+    at ModuleScope.findVariable (file:///C:/Users/admin/Desktop/EcommerReactUI/EcommerceReact/node_modules/rollup/dist/es/shared/node-entry.js:15076:39)
+    at ReturnValueScope.findVariable (file:///C:/Users/admin/Desktop/EcommerReactUI/EcommerceReact/node_modules/rollup/dist/es/shared/node-entry.js:5649:38)
+    at FunctionBodyScope.findVariable (file:///C:/Users/admin/Desktop/EcommerReactUI/EcommerceReact/node_modules/rollup/dist/es/shared/node-entry.js:5649:38)
+    at ReturnValueScope.findVariable (file:///C:/Users/admin/Desktop/EcommerReactUI/EcommerceReact/node_modules/rollup/dist/es/shared/node-entry.js:5649:38)
+    at FunctionBodyScope.findVariable (file:///C:/Users/admin/Desktop/EcommerReactUI/EcommerceReact/node_modules/rollup/dist/es/shared/node-entry.js:5649:38)
+    at ReturnValueScope.findVariable (file:///C:/Users/admin/Desktop/EcommerReactUI/EcommerceReact/node_modules/rollup/dist/es/shared/node-entry.js:5649:38)[39m

@@ -21,14 +21,38 @@ function Header() {
     const favCount = favoriteItems.length;
 
     const handleVoiceSearch = () => {
-        setIsListening(true);
-        // Simulate voice recognition delay
-        setTimeout(() => {
+        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+            alert("Your browser does not support voice search. Please use Google Chrome or Edge.");
+            return;
+        }
+
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+
+        recognition.onstart = () => {
+            setIsListening(true);
+        };
+
+        recognition.onend = () => {
             setIsListening(false);
-            const mockQuery = "Black Hoodie";
-            setSearchQuery(mockQuery);
-            navigate(`/search?q=${encodeURIComponent(mockQuery)}`);
-        }, 1500);
+        };
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            setSearchQuery(transcript);
+            navigate(`/search?q=${encodeURIComponent(transcript)}`);
+        };
+
+        recognition.onerror = (event) => {
+            console.error("Voice search error", event.error);
+            setIsListening(false);
+        };
+
+        recognition.start();
     };
 
     useEffect(() => {
@@ -105,7 +129,7 @@ function Header() {
                         }}
                         className="relative hidden xl:block group"
                     >
-                        <div className="flex items-center bg-gray-100 dark:bg-gray-800/50 rounded-full px-4 py-2 border border-transparent focus-within:border-red-600 focus-within:ring-1 focus-within:ring-red-600 w-64 focus-within:w-96 transition-all duration-300 ease-in-out">
+                        <div className={`flex items-center bg-gray-100 dark:bg-gray-800/50 rounded-full px-4 py-2 border border-transparent focus-within:border-red-600 focus-within:ring-1 focus-within:ring-red-600 w-64 focus-within:w-96 transition-all duration-300 ease-in-out ${isListening ? 'ring-2 ring-red-500 border-red-500' : ''}`}>
                             <FiSearch className="text-gray-400 group-focus-within:text-red-600 transition-colors" />
                             <input
                                 type="text"
@@ -117,7 +141,7 @@ function Header() {
                             <button
                                 type="button"
                                 onClick={handleVoiceSearch}
-                                className={`ml-2 p-1.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition ${isListening ? 'text-red-600 animate-pulse' : 'text-gray-400'}`}
+                                className={`ml-2 p-1.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition ${isListening ? 'text-red-600 animate-pulse bg-red-100 dark:bg-red-900' : 'text-gray-400'}`}
                                 title="Voice Search"
                             >
                                 <FiMic className="w-4 h-4" />
@@ -161,7 +185,7 @@ function Header() {
                             <img src={user.avatar || "https://ui-avatars.com/api/?name=User"} alt="User" className="w-8 h-8 rounded-full border border-gray-200 dark:border-gray-700 object-cover" />
                         ) : (
                             <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 flex items-center justify-center hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition" title="Login">
-                                <FiLogIn className="w-5 h-5 ml-0.5" />
+                                <FiUser className="w-5 h-5 ml-0.5" />
                             </div>
                         )}
                     </NavLink>

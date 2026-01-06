@@ -5,18 +5,21 @@ import App from './App.jsx'
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ShopProvider } from './Context/ShopContext.jsx';
 
-import Home from './Components/Home.jsx';
-import About from './Components/About.jsx';
-import Contact from './Components/Contact.jsx';
-import Favorites from './Components/Favorites.jsx';
-import ProductOverview from './Components/ProductOverview.jsx';
-import Login from './Components/Login.jsx';
-import OrderTracking from './Components/OrderTracking.jsx';
-import OrderHistory from './Components/OrderHistory.jsx';
-import Payment from './Components/Payment.jsx';
-import CategoryPage from './Components/CategoryPage.jsx';
-import SearchResults from './Components/SearchResults.jsx';
-import Orders from './Components/Orders.jsx';
+import { lazy, Suspense } from 'react';
+import LoadingSpinner from './Components/LoadingSpinner'; // We'll create this simple component
+
+const Home = lazy(() => import('./Components/Home.jsx'));
+const About = lazy(() => import('./Components/About.jsx'));
+const Contact = lazy(() => import('./Components/Contact.jsx'));
+const Favorites = lazy(() => import('./Components/Favorites.jsx'));
+const ProductOverview = lazy(() => import('./Components/ProductOverview.jsx'));
+const Login = lazy(() => import('./Components/Login.jsx'));
+const OrderTracking = lazy(() => import('./Components/OrderTracking.jsx'));
+const OrderHistory = lazy(() => import('./Components/OrderHistory.jsx'));
+const Payment = lazy(() => import('./Components/Payment.jsx'));
+const CategoryPage = lazy(() => import('./Components/CategoryPage.jsx'));
+const SearchResults = lazy(() => import('./Components/SearchResults.jsx'));
+const Orders = lazy(() => import('./Components/Orders.jsx'));
 
 
 const router = createBrowserRouter([
@@ -97,7 +100,9 @@ const router = createBrowserRouter([
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ShopProvider>
-      <RouterProvider router={router} />
+      <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[var(--color-normalbg)] dark:bg-[var(--color-darkbg)]"><div className="w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div></div>}>
+        <RouterProvider router={router} />
+      </Suspense>
     </ShopProvider>
   </StrictMode>,
 

@@ -4,7 +4,8 @@ import { Elements, CardElement, useStripe, useElements } from '@stripe/react-str
 import { ShopContext } from '../Context/ShopContext';
 import { useNavigate } from 'react-router-dom';
 import { formatPrice } from '../utils';
-import { FiLock, FiTruck, FiCreditCard, FiAlertCircle, FiCheckCircle } from 'react-icons/fi';
+import { downloadInvoice } from '../utils/invoiceGenerator';
+import { FiLock, FiTruck, FiCreditCard, FiAlertCircle, FiCheckCircle, FiDownload } from 'react-icons/fi';
 
 const stripePromise = loadStripe('pk_test_TYooMQauvdEDq54NiTphI7jx'); // Public test key
 
@@ -16,6 +17,7 @@ const CheckoutForm = () => {
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState('card');
+    const [lastOrder, setLastOrder] = useState(null);
 
     // Mock Shipping State
     const [shipping, setShipping] = useState({
@@ -92,14 +94,16 @@ const CheckoutForm = () => {
             };
 
             addOrder(newOrder);
+            setLastOrder(newOrder); // Save order for invoice
             setSuccess(true);
             clearCart();
             setLoading(false);
 
-            // Redirect after small delay
-            setTimeout(() => {
-                navigate('/order-history');
-            }, 2000);
+            // Redirect after delay (longer now to allow invoice download if needed, or user can click 'View Order')
+            // Removing auto-redirect to let user choose
+            // setTimeout(() => {
+            //     navigate('/order-history');
+            // }, 5000);
 
         }, 1500);
     };
@@ -133,9 +137,21 @@ const CheckoutForm = () => {
                 <p className="text-lg text-gray-600 dark:text-gray-300 mb-8 max-w-lg">
                     Thank you for your order, {shipping.name}. A confirmation email has been sent to {shipping.email}.
                 </p>
-                <button onClick={() => navigate('/order-history')} className="btn-primary">
-                    View My Order
-                </button>
+                <div className="flex gap-4 mt-6">
+                    <button onClick={() => navigate('/order-history')} className="btn-primary">
+                        View My Order
+                    </button>
+                    <button
+                        onClick={() => {
+                            if (lastOrder) {
+                                downloadInvoice(lastOrder);
+                            }
+                        }}
+                        className="flex items-center gap-2 px-6 py-3 rounded-xl border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition"
+                    >
+                        <FiDownload /> Download Invoice
+                    </button>
+                </div>
             </div>
         );
     }
@@ -209,22 +225,46 @@ const CheckoutForm = () => {
                                 >
                                     Cash on Delivery
                                 </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setPaymentMethod('wallet')}
+                                    className={`pb-2 px-1 text-sm font-medium transition whitespace-nowrap ${paymentMethod === 'wallet' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
+                                >
+                                    Wallet / QR
+                                </button>
                             </div>
 
                             <div className="min-h-[200px]">
                                 {paymentMethod === 'card' && (
                                     <div className="animate-fadeIn">
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Card Information</label>
-                                        <div className="p-4 border border-gray-300 dark:border-gray-600 rounded-xl bg-white transition focus-within:ring-2 focus-within:ring-indigo-500">
+                                        <div className="flex justify-between items-center mb-4">
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Card Information</label>
+                                            <div className="flex gap-2">
+                                                <span className="text-xs bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 px-2 py-1 rounded-full font-medium">Secure</span>
+                                                <span className="text-xs bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 px-2 py-1 rounded-full font-medium">Encrypted</span>
+                                            </div>
+                                        </div>
+                                        <div className="p-4 border border-gray-300 dark:border-gray-600 rounded-xl bg-white transition focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-indigo-500 shadow-sm">
                                             <CardElement options={{
                                                 style: {
                                                     base: {
                                                         fontSize: '16px',
                                                         color: '#1f2937',
+                                                        fontFamily: '"Plus Jakarta Sans", sans-serif',
                                                         '::placeholder': { color: '#9ca3af' },
+                                                        iconColor: '#6366f1'
                                                     },
+                                                    invalid: {
+                                                        color: '#ef4444',
+                                                        iconColor: '#ef4444'
+                                                    }
                                                 },
+                                                hidePostalCode: true
                                             }} />
+                                        </div>
+                                        <div className="mt-4 flex items-center gap-2">
+                                            <input type="checkbox" id="save-card" className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900" />
+                                            <label htmlFor="save-card" className="text-sm text-gray-600 dark:text-gray-400 cursor-pointer select-none">Save this card for faster payments</label>
                                         </div>
                                     </div>
                                 )}
@@ -241,9 +281,49 @@ const CheckoutForm = () => {
 
                                 {paymentMethod === 'cod' && (
                                     <div className="animate-fadeIn flex flex-col items-center justify-center text-center p-6 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-dashed border-gray-300 dark:border-gray-700">
-                                        <FiTruck className="text-4xl text-indigo-600 mb-3" />
-                                        <h3 className="font-semibold text-gray-900 dark:text-white">Pay on Delivery</h3>
-                                        <p className="text-sm text-gray-500 mt-1">Pay cash or use UPI when the order is delivered to your doorstep.</p>
+                                        <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-4">
+                                            <FiTruck className="text-2xl text-green-600 dark:text-green-400" />
+                                        </div>
+                                        <h3 className="font-semibold text-gray-900 dark:text-white text-lg">Pay on Delivery</h3>
+                                        <p className="text-sm text-gray-500 mt-2 max-w-xs">Pay securely with cash or UPI when our delivery partner arrives at your doorstep.</p>
+                                    </div>
+                                )}
+
+                                {paymentMethod === 'wallet' && (
+                                    <div className="animate-fadeIn space-y-6">
+                                        <div className="flex flex-col items-center justify-center p-6 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                                            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-4">Scan QR to Pay</h3>
+                                            <div className="p-3 bg-white rounded-lg shadow-md border border-gray-100">
+                                                {/* Simulated QR Code */}
+                                                <img
+                                                    src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=obitostore@upi&pn=ObitoStore&am=${total}&cu=INR`}
+                                                    alt="Payment QR Code"
+                                                    className="w-40 h-40"
+                                                />
+                                            </div>
+                                            <p className="mt-4 text-xs text-center text-gray-500">
+                                                Scan with any UPI app (GPay, PhonePe, Paytm) <br />
+                                                to pay <span className="font-bold text-gray-900 dark:text-gray-200">{formatPrice(total)}</span>
+                                            </p>
+                                        </div>
+
+                                        <div className="relative">
+                                            <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                                                <div className="w-full border-t border-gray-200 dark:border-gray-700"></div>
+                                            </div>
+                                            <div className="relative flex justify-center">
+                                                <span className="bg-white dark:bg-gray-800 px-2 text-sm text-gray-400">Or pay with Wallet</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex gap-4">
+                                            <button type="button" className="flex-1 py-3 px-4 border border-gray-200 dark:border-gray-600 rounded-lg flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                                                <span className="font-medium text-sm text-gray-700 dark:text-gray-200">Apple Pay</span>
+                                            </button>
+                                            <button type="button" className="flex-1 py-3 px-4 border border-gray-200 dark:border-gray-600 rounded-lg flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                                                <span className="font-medium text-sm text-gray-700 dark:text-gray-200">Google Pay</span>
+                                            </button>
+                                        </div>
                                     </div>
                                 )}
                             </div>

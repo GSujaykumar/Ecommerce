@@ -6,11 +6,11 @@ import Cart from './Components/Cart'
 import NewsletterPopup from './Components/NewsletterPopup'
 import Chatbot from './Components/Chatbot'
 import QuickViewModal from './Components/QuickViewModal'
-
+import ScrollToTop from './Components/ScrollToTop'
 import { Outlet } from 'react-router-dom'
 import { ToastProvider } from './Context/ToastContext'
 import { QuickViewProvider } from './Context/QuickViewContext'
-import ScrollToTop from "./Components/ScrollToTop";
+
 
 
 

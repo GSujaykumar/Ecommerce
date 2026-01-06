@@ -2,29 +2,49 @@ import React, { useState, useContext } from "react";
 import { FaGoogle, FaGithub } from "react-icons/fa";
 import { ShopContext } from "../Context/ShopContext";
 import { useNavigate, useLocation } from "react-router-dom";
+import { loginUser } from "../api";
 
 export default function Login() {
     const location = useLocation();
     const [isLogin, setIsLogin] = useState(location.pathname !== '/signup');
     const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
     const { login } = useContext(ShopContext);
     const navigate = useNavigate();
 
-    const handleAuth = (provider) => {
+    const handleAuth = async (provider) => {
         setIsLoading(true);
-        // Simulate network delay
-        setTimeout(() => {
-            const mockUser = {
-                name: provider === 'google' ? "Google User" : "GitHub Dev",
-                email: provider === 'google' ? "user@gmail.com" : "dev@github.com",
-                avatar: provider === 'google'
-                    ? "https://ui-avatars.com/api/?name=Google+User&background=DB4437&color=fff"
-                    : "https://ui-avatars.com/api/?name=GitHub+Dev&background=000&color=fff"
-            };
-            login(mockUser);
-            setIsLoading(false);
+        setError(null);
+
+        try {
+            // We only support 'email' path fully with backend for now (mocked in api.js)
+            // If provider is google/github, we just mock it for UI demo
+            let userData, token;
+
+            if (provider === 'email') {
+                const response = await loginUser('user@example.com', 'password');
+                userData = response.user;
+                token = response.token;
+            } else {
+                // Mock Social
+                userData = {
+                    name: provider === 'google' ? "Google User" : "GitHub Dev",
+                    email: provider === 'google' ? "user@gmail.com" : "dev@github.com",
+                    avatar: provider === 'google'
+                        ? "https://ui-avatars.com/api/?name=Google+User&background=DB4437&color=fff"
+                        : "https://ui-avatars.com/api/?name=GitHub+Dev&background=000&color=fff"
+                };
+                token = "mock-social-token";
+            }
+
+            login(userData, token);
             navigate("/");
-        }, 1500);
+        } catch (err) {
+            console.error(err);
+            setError("Authentication failed. Please try again.");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -55,7 +75,13 @@ export default function Login() {
                     </p>
                 </div>
 
-                {/* Simulated Form (Visual Only for now unless user asks to wire it up) */}
+                {error && (
+                    <div className="mb-4 p-3 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-sm rounded-lg text-center">
+                        {error}
+                    </div>
+                )}
+
+                {/* Simulated Form */}
                 <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); handleAuth('email'); }}>
                     {!isLogin && (
                         <div>
@@ -65,7 +91,7 @@ export default function Login() {
                     )}
                     <div>
                         <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Email address</label>
-                        <input type="email" placeholder="obito@akatsuki.com" className="mt-2 w-full rounded-xl px-4 py-3 bg-white dark:bg-white/10 border border-gray-200 dark:border-white/20 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 transition" />
+                        <input type="email" placeholder="user@example.com" className="mt-2 w-full rounded-xl px-4 py-3 bg-white dark:bg-white/10 border border-gray-200 dark:border-white/20 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 transition" />
                     </div>
                     <div>
                         <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
