@@ -98,7 +98,33 @@ function Footer() {
         </div>
 
       </div>
+
+      {/* System Status Indicator */}
+      <div className="max-w-7xl mx-auto px-6 mt-4 flex justify-end">
+        <SystemStatus />
+      </div>
     </footer>
+  );
+}
+
+function SystemStatus() {
+  const [status, setStatus] = React.useState('checking');
+
+  React.useEffect(() => {
+    import('../api').then(({ checkBackendHealth }) => {
+      checkBackendHealth().then(isOnline => {
+        setStatus(isOnline ? 'online' : 'offline');
+      });
+    });
+  }, []);
+
+  return (
+    <div className="flex items-center gap-2 text-xs font-mono">
+      <span className="text-gray-500 dark:text-gray-400">System Status:</span>
+      {status === 'checking' && <span className="text-yellow-500">● Checking...</span>}
+      {status === 'online' && <span className="text-green-500">● Online (MySQL Connected)</span>}
+      {status === 'offline' && <span className="text-red-500">● Offline (Using Fallback Data)</span>}
+    </div>
   );
 }
 

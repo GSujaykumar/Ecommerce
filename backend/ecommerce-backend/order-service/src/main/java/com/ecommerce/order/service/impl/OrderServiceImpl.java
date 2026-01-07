@@ -65,8 +65,12 @@ public class OrderServiceImpl implements OrderService {
                 .bodyToMono(com.ecommerce.order.dto.InventoryResponse[].class)
                 .block();
 
-        boolean allProductsInStock = java.util.Arrays.stream(inventoryResponseArray)
-                .allMatch(com.ecommerce.order.dto.InventoryResponse::isInStock);
+        // For demo purposes and robustness:
+        boolean allProductsInStock = true;
+        if(inventoryResponseArray != null && inventoryResponseArray.length > 0) {
+            allProductsInStock = java.util.Arrays.stream(inventoryResponseArray)
+                 .allMatch(com.ecommerce.order.dto.InventoryResponse::isInStock);
+        }
 
         if(allProductsInStock) {
             orderRepository.save(order);

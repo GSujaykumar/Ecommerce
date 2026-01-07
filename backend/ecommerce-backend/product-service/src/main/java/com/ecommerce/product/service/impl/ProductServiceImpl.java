@@ -23,6 +23,7 @@ public class ProductServiceImpl implements ProductService {
         Product product = Product.builder()
                 .name(productRequest.name())
                 .description(productRequest.description())
+                .skuCode(productRequest.skuCode())
                 .price(productRequest.price())
                 .imageUrl(productRequest.imageUrl())
                 .build();
@@ -51,6 +52,7 @@ public class ProductServiceImpl implements ProductService {
                 product.getId(),
                 product.getName(),
                 product.getDescription(),
+                product.getSkuCode(),
                 product.getPrice(),
                 product.getImageUrl()
         );

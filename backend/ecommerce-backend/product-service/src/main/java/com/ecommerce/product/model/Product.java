@@ -21,6 +21,7 @@ public class Product {
 
     private String name;
     private String description;
+    private String skuCode;
     private BigDecimal price;
     private String imageUrl;
 }
