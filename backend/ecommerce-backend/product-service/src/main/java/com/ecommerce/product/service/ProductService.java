@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface ProductService {
     ProductResponse createProduct(ProductRequest productRequest);
-    List<ProductResponse> getAllProducts();
+    List<ProductResponse> getAllProducts(String category);
     void deleteProduct(Long id);
 }

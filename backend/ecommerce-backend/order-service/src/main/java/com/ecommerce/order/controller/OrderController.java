@@ -21,14 +21,12 @@ public class OrderController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public String placeOrder(@RequestBody OrderRequest orderRequest, @AuthenticationPrincipal Jwt jwt) {
-        String userId = (jwt != null) ? jwt.getSubject() : "test-user";
+    public String placeOrder(@RequestBody OrderRequest orderRequest, @RequestHeader(value = "X-User-Id", defaultValue = "test-user") String userId) {
         return orderService.placeOrder(orderRequest, userId);
     }
 
     @GetMapping
-    public List<OrderResponse> getMyOrders(@AuthenticationPrincipal Jwt jwt) {
-        String userId = (jwt != null) ? jwt.getSubject() : "test-user";
+    public List<OrderResponse> getMyOrders(@RequestHeader(value = "X-User-Id", defaultValue = "test-user") String userId) {
         return orderService.getMyOrders(userId);
     }
 }

@@ -16,20 +16,17 @@ public class CartController {
     private final CartService cartService;
 
     @GetMapping
-    public Cart getCart(@AuthenticationPrincipal Jwt jwt) {
-        String userId = (jwt != null) ? jwt.getSubject() : "test-user";
+    public Cart getCart(@RequestHeader(value = "X-User-Id", defaultValue = "test-user") String userId) {
         return cartService.getCart(userId);
     }
 
     @PostMapping
-    public Cart addToCart(@AuthenticationPrincipal Jwt jwt, @RequestBody CartItem cartItem) {
-        String userId = (jwt != null) ? jwt.getSubject() : "test-user";
+    public Cart addToCart(@RequestHeader(value = "X-User-Id", defaultValue = "test-user") String userId, @RequestBody CartItem cartItem) {
         return cartService.addToCart(userId, cartItem);
     }
     
     @DeleteMapping
-    public void clearCart(@AuthenticationPrincipal Jwt jwt) {
-         String userId = (jwt != null) ? jwt.getSubject() : "test-user";
+    public void clearCart(@RequestHeader(value = "X-User-Id", defaultValue = "test-user") String userId) {
          cartService.clearCart(userId);
     }
 }

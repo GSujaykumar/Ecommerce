@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 // DIRECT SERVICE URLS (Bypassing Gateway)
+const USER_URL = 'http://localhost:8081/api';
 const PRODUCT_URL = 'http://localhost:8082/api';
 const ORDER_URL = 'http://localhost:8083/api';
 const CART_URL = 'http://localhost:8084/api';
@@ -14,11 +15,27 @@ const createServiceApi = (baseUrl) => {
     instance.interceptors.request.use((config) => {
         const token = localStorage.getItem('token');
         if (token) config.headers.Authorization = `Bearer ${token}`;
+
+        // Pass User ID explicitly to bypass stateless JWT extraction issues in backend dev mode
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+            try {
+                const userObj = JSON.parse(storedUser);
+                if (userObj.id) {
+                    config.headers['X-User-Id'] = userObj.id;
+                    // Also generic user-id header just in case
+                    config.headers['user-id'] = userObj.id;
+                }
+            } catch (e) {
+                console.error("Error parsing stored user", e);
+            }
+        }
         return config;
     });
     return instance;
 };
 
+const userApi = createServiceApi(USER_URL);
 const productApi = createServiceApi(PRODUCT_URL);
 const orderApi = createServiceApi(ORDER_URL);
 const cartApi = createServiceApi(CART_URL);
@@ -30,7 +47,7 @@ const mapBackendProductToFrontend = (p) => ({
     description: p.description,
     price: p.price,
     image: p.imageUrl,
-    category: "General",
+    category: p.category || "General",
     rating: { rate: 4.5, count: 10 }
 });
 
@@ -46,17 +63,44 @@ export const getAllProducts = async () => {
 };
 
 export const fetchProductsByCategory = async (category) => {
-    const products = await getAllProducts();
-    if (!category || category === 'all') return products;
-    return products.filter(p => p.category.toLowerCase() === category.toLowerCase());
+    try {
+        const query = (category && category !== 'all') ? `?category=${category}` : '';
+        const response = await productApi.get(`/products${query}`);
+        return response.data.map(mapBackendProductToFrontend);
+    } catch (error) {
+        console.error("Backend Error (Products by Category):", error);
+        return [];
+    }
 };
 
 // --- AUTH ---
-export const loginUser = async (username, password) => {
-    return {
-        token: "mock-jwt-token-access-granted",
-        user: { name: "Test User", email: "user@example.com", id: "user-123" }
-    };
+export const loginUser = async (username, password, fullName = "New User", address = "Unknown") => {
+    try {
+        // Dynamic Login against User Service
+        const response = await userApi.post('/users/login', {
+            email: username,
+            fullName: fullName,
+            address: address
+        });
+        return {
+            token: "mock-jwt-token-access-granted", // Placeholder until full Auth Server is up
+            user: response.data
+        };
+    } catch (error) {
+        // Fallback for registration/simulation if user not found (or 404)
+        if (error.response && error.response.status === 404) {
+            const registerResponse = await userApi.post('/users/register', {
+                email: username,
+                fullName: fullName !== "New User" ? fullName : username.split('@')[0],
+                address: address
+            });
+            return {
+                token: "mock-jwt-token-access-granted",
+                user: registerResponse.data
+            };
+        }
+        throw error;
+    }
 };
 
 // --- CART ---

@@ -26,6 +26,7 @@ public class ProductServiceImpl implements ProductService {
                 .skuCode(productRequest.skuCode())
                 .price(productRequest.price())
                 .imageUrl(productRequest.imageUrl())
+                .category(productRequest.category())
                 .build();
 
         productRepository.save(product);
@@ -34,8 +35,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductResponse> getAllProducts() {
-        List<Product> products = productRepository.findAll();
+    public List<ProductResponse> getAllProducts(String category) {
+        List<Product> products;
+        if (category != null && !category.isEmpty()) {
+            products = productRepository.findByCategoryIgnoreCase(category);
+        } else {
+            products = productRepository.findAll();
+        }
         return products.stream().map(this::mapToProductResponse).toList();
     }
 
@@ -54,7 +60,8 @@ public class ProductServiceImpl implements ProductService {
                 product.getDescription(),
                 product.getSkuCode(),
                 product.getPrice(),
-                product.getImageUrl()
+                product.getImageUrl(),
+                product.getCategory()
         );
     }
 }

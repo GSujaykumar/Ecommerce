@@ -8,6 +8,7 @@ import com.ecommerce.order.model.OrderLineItems;
 import com.ecommerce.order.repository.OrderRepository;
 import com.ecommerce.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -21,6 +22,7 @@ import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
@@ -73,6 +75,16 @@ public class OrderServiceImpl implements OrderService {
         }
 
         if(allProductsInStock) {
+            // CALL PAYMENT SERVICE
+            String paymentResponse = webClientBuilder.build().post()
+                .uri("http://localhost:8085/api/payment")
+                .bodyValue(new com.ecommerce.order.dto.PaymentRequest(order.getTotalPrice(), order.getOrderNumber()))
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+
+            log.info("Payment Response: {}", paymentResponse);
+
             orderRepository.save(order);
             kafkaTemplate.send("notificationTopic", order.getOrderNumber());
             return order.getOrderNumber();

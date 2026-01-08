@@ -12,6 +12,8 @@ export default function Login() {
     const { login } = useContext(ShopContext);
     const navigate = useNavigate();
 
+    const [formData, setFormData] = useState({ email: '', password: '', fullName: '' });
+
     const handleAuth = async (provider) => {
         setIsLoading(true);
         setError(null);
@@ -22,7 +24,8 @@ export default function Login() {
             let userData, token;
 
             if (provider === 'email') {
-                const response = await loginUser('user@example.com', 'password');
+                // Pass email as username, and fullName from form
+                const response = await loginUser(formData.email, formData.password, formData.fullName);
                 userData = response.user;
                 token = response.token;
             } else {
@@ -81,21 +84,42 @@ export default function Login() {
                     </div>
                 )}
 
-                {/* Simulated Form */}
+                {/* Actual Form */}
                 <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); handleAuth('email'); }}>
                     {!isLogin && (
                         <div>
                             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Full Name</label>
-                            <input type="text" placeholder="Obito Uchiha" className="mt-2 w-full rounded-xl px-4 py-3 bg-white dark:bg-white/10 border border-gray-200 dark:border-white/20 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 transition" />
+                            <input
+                                type="text"
+                                placeholder="Obito Uchiha"
+                                required={!isLogin}
+                                value={formData.fullName}
+                                onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                                className="mt-2 w-full rounded-xl px-4 py-3 bg-white dark:bg-white/10 border border-gray-200 dark:border-white/20 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 transition"
+                            />
                         </div>
                     )}
                     <div>
                         <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Email address</label>
-                        <input type="email" placeholder="user@example.com" className="mt-2 w-full rounded-xl px-4 py-3 bg-white dark:bg-white/10 border border-gray-200 dark:border-white/20 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 transition" />
+                        <input
+                            type="email"
+                            placeholder="user@example.com"
+                            required
+                            value={formData.email}
+                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                            className="mt-2 w-full rounded-xl px-4 py-3 bg-white dark:bg-white/10 border border-gray-200 dark:border-white/20 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 transition"
+                        />
                     </div>
                     <div>
                         <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
-                        <input type="password" placeholder="••••••••" className="mt-2 w-full rounded-xl px-4 py-3 bg-white dark:bg-white/10 border border-gray-200 dark:border-white/20 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 transition" />
+                        <input
+                            type="password"
+                            placeholder="••••••••"
+                            required
+                            value={formData.password}
+                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                            className="mt-2 w-full rounded-xl px-4 py-3 bg-white dark:bg-white/10 border border-gray-200 dark:border-white/20 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 transition"
+                        />
                     </div>
 
                     <button disabled={isLoading} className="w-full rounded-xl py-3 font-semibold text-white bg-gradient-to-r from-gray-900 to-black dark:from-indigo-600 dark:to-violet-600 shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-70 disabled:cursor-not-allowed">

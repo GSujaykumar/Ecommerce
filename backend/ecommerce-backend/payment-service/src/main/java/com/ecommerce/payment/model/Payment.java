@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "t_payments")
@@ -20,6 +19,5 @@ public class Payment {
     private Long id;
     private String orderId;
     private BigDecimal amount;
-    private String status; // SUCCESS, FAILED
-    private LocalDateTime timestamp;
+    private String paymentStatus; // e.g., "SUCCESS"
 }

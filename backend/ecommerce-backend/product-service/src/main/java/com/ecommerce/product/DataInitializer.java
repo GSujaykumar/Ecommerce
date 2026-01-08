@@ -24,6 +24,7 @@ public class DataInitializer {
                         .skuCode("iphone_15_pro_max")
                         .price(new BigDecimal("1199.00"))
                         .imageUrl("https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&q=80&w=2070")
+                        .category("Electronics")
                         .build(),
                     Product.builder()
                         .name("MacBook Air M3")
@@ -31,6 +32,7 @@ public class DataInitializer {
                         .skuCode("macbook_air_m3")
                         .price(new BigDecimal("1099.00"))
                         .imageUrl("https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&q=80&w=2069")
+                        .category("Electronics")
                         .build(),
                     Product.builder()
                         .name("Sony WH-1000XM5")
@@ -38,6 +40,7 @@ public class DataInitializer {
                         .skuCode("sony_wh1000xm5")
                         .price(new BigDecimal("398.00"))
                         .imageUrl("https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?auto=format&fit=crop&q=80&w=1976")
+                        .category("Electronics")
                         .build(),
                     Product.builder()
                         .name("Samsung Galaxy S24 Ultra")
@@ -45,6 +48,7 @@ public class DataInitializer {
                         .skuCode("samsung_s24_ultra")
                         .price(new BigDecimal("1299.00"))
                         .imageUrl("https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?auto=format&fit=crop&q=80&w=2071")
+                        .category("Electronics")
                         .build(),
                     
                     // Fashion
@@ -54,6 +58,7 @@ public class DataInitializer {
                         .skuCode("nike_air_jordan_1")
                         .price(new BigDecimal("180.00"))
                         .imageUrl("https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&q=80&w=2070")
+                        .category("Fashion")
                         .build(),
                     Product.builder()
                         .name("Adidas Ultraboost 1.0")
@@ -61,6 +66,7 @@ public class DataInitializer {
                         .skuCode("adidas_ultraboost")
                         .price(new BigDecimal("190.00"))
                         .imageUrl("https://images.unsplash.com/photo-1579338559194-a162d19bf842?auto=format&fit=crop&q=80&w=2070")
+                        .category("Fashion")
                         .build(),
                     Product.builder()
                         .name("Rolex Submariner")
@@ -68,6 +74,7 @@ public class DataInitializer {
                         .skuCode("rolex_submariner")
                         .price(new BigDecimal("9950.00"))
                         .imageUrl("https://images.unsplash.com/photo-1523170335258-f5ed11844a49?auto=format&fit=crop&q=80&w=2079")
+                        .category("Fashion")
                         .build(),
 
                     // Home & Others
@@ -77,6 +84,7 @@ public class DataInitializer {
                         .skuCode("dyson_v15")
                         .price(new BigDecimal("749.99"))
                         .imageUrl("https://images.unsplash.com/photo-1558317374-a309d9361ad7?auto=format&fit=crop&q=80&w=2070")
+                        .category("Home")
                         .build(),
                     Product.builder()
                         .name("Nespresso Vertuo Next")
@@ -84,6 +92,7 @@ public class DataInitializer {
                         .skuCode("nespresso_vertuo")
                         .price(new BigDecimal("179.00"))
                         .imageUrl("https://images.unsplash.com/photo-1517080315802-1a48c6657c66?auto=format&fit=crop&q=80&w=2072")
+                        .category("Home")
                         .build(),
                      Product.builder()
                         .name("PlayStation 5")
@@ -91,6 +100,7 @@ public class DataInitializer {
                         .skuCode("ps5_console")
                         .price(new BigDecimal("499.00"))
                         .imageUrl("https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&q=80&w=2072")
+                        .category("Home")
                         .build()
                 );
 

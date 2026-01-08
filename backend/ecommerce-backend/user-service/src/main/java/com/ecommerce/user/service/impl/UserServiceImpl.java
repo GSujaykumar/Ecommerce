@@ -28,7 +28,11 @@ public class UserServiceImpl implements UserService {
             user.setFullName(userRequest.fullName());
             user.setAddress(userRequest.address());
         } else {
-            user = new User(keycloakId, userRequest.email(), userRequest.fullName(), userRequest.address());
+            user = new User();
+            user.setKeycloakId(keycloakId);
+            user.setEmail(userRequest.email());
+            user.setFullName(userRequest.fullName());
+            user.setAddress(userRequest.address());
         }
         
         userRepository.save(user);
@@ -39,6 +43,13 @@ public class UserServiceImpl implements UserService {
     public UserResponse getUserByKeycloakId(String keycloakId) {
         User user = userRepository.findByKeycloakId(keycloakId)
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + keycloakId));
+        return mapToResponse(user);
+    }
+
+    @Override
+    public UserResponse getUserByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
         return mapToResponse(user);
     }
 

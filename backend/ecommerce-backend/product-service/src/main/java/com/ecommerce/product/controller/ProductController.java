@@ -21,8 +21,8 @@ public class ProductController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ProductResponse> getAllProducts() {
-        return productService.getAllProducts();
+    public List<ProductResponse> getAllProducts(@RequestParam(required = false) String category) {
+        return productService.getAllProducts(category);
     }
 
     @PostMapping

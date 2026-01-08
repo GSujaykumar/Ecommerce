@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/users")
+@CrossOrigin("*") 
 public class UserController {
 
     private final UserService userService;
@@ -33,5 +34,29 @@ public class UserController {
         UserRequest securedRequest = new UserRequest(email, userRequest.fullName(), userRequest.address());
         
         return userService.syncUser(keycloakId, securedRequest);
+    }
+    @PostMapping("/login")
+    public UserResponse login(@RequestBody UserRequest userRequest) {
+        try {
+            return userService.getUserByEmail(userRequest.email());
+        } catch (Exception e) {
+            // Auto-register if not found (Simplified Flow)
+            String fakeId = java.util.UUID.randomUUID().toString();
+            
+            // Ensure we don't save empty names if auto-registering via Login
+            String name = (userRequest.fullName() == null || userRequest.fullName().trim().isEmpty()) 
+                          ? "New User" 
+                          : userRequest.fullName();
+                          
+            UserRequest registrationRequest = new UserRequest(userRequest.email(), name, userRequest.address());
+            return userService.syncUser(fakeId, registrationRequest);
+        }
+    }
+
+    @PostMapping("/register")
+    public UserResponse register(@RequestBody UserRequest userRequest) {
+         // Generate a fake Keycloak ID for now since we are bypassing Auth Server
+         String fakeId = java.util.UUID.randomUUID().toString();
+         return userService.syncUser(fakeId, userRequest);
     }
 }
