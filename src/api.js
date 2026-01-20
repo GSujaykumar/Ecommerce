@@ -1,10 +1,13 @@
 import axios from 'axios';
 
-// DIRECT SERVICE URLS (Bypassing Gateway)
-const USER_URL = 'http://localhost:8081/api';
-const PRODUCT_URL = 'http://localhost:8082/api';
-const ORDER_URL = 'http://localhost:8083/api';
-const CART_URL = 'http://localhost:8084/api';
+// DIRECT SERVICE URLS (Via Gateway)
+const GATEWAY_URL = 'http://localhost:8080/api';
+const USER_URL = GATEWAY_URL;
+const PRODUCT_URL = GATEWAY_URL;
+const ORDER_URL = GATEWAY_URL;
+const CART_URL = GATEWAY_URL;
+const PAYMENT_URL = GATEWAY_URL;
+const NOTIFICATION_URL = GATEWAY_URL;
 
 // Helper to create axios instances
 const createServiceApi = (baseUrl) => {
@@ -79,6 +82,7 @@ export const loginUser = async (username, password, fullName = "New User", addre
         // Dynamic Login against User Service
         const response = await userApi.post('/users/login', {
             email: username,
+            password: password,
             fullName: fullName,
             address: address
         });

@@ -8,4 +8,5 @@ public interface UserService {
     UserResponse syncUser(String keycloakId, UserRequest userRequest);
     UserResponse getUserByKeycloakId(String keycloakId);
     UserResponse getUserByEmail(String email);
+    UserResponse login(UserRequest request);
 }

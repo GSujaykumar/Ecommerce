@@ -19,26 +19,44 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public UserResponse getMyProfile(@AuthenticationPrincipal Jwt jwt) {
-        String keycloakId = jwt.getSubject();
-        return userService.getUserByKeycloakId(keycloakId);
+    public UserResponse getMyProfile(@AuthenticationPrincipal Jwt jwt, @RequestHeader(value = "X-User-Id", required = false) String userId) {
+        if (jwt != null) {
+            return userService.getUserByKeycloakId(jwt.getSubject());
+        } else if (userId != null) {
+            // Assuming userId passed in header is the Keycloak ID or we have a method to find by ID
+            // For now, let's treat it as keycloakId or implement findById
+            return userService.getUserByKeycloakId(userId);
+        }
+        throw new RuntimeException("User not authenticated");
     }
 
     @PostMapping("/sync")
-    public UserResponse syncUser(@AuthenticationPrincipal Jwt jwt, @RequestBody UserRequest userRequest) {
-        String keycloakId = jwt.getSubject();
-        // Fallback: If email is missing in request, try to get from token
-        String email = userRequest.email() != null ? userRequest.email() : jwt.getClaimAsString("email");
-        
+    public UserResponse syncUser(@AuthenticationPrincipal Jwt jwt, @RequestHeader(value = "X-User-Id", required = false) String userId, @RequestBody UserRequest userRequest) {
+        String keycloakId = null;
+        String email = null;
+
+        if (jwt != null) {
+            keycloakId = jwt.getSubject();
+            email = userRequest.email() != null ? userRequest.email() : jwt.getClaimAsString("email");
+        } else if (userId != null) {
+            keycloakId = userId;
+            email = userRequest.email();
+        }
+
+        if (keycloakId == null) {
+             // Fallback for non-auth setup
+             keycloakId = java.util.UUID.randomUUID().toString();
+        }
+
         // Re-construct request with verified email
-        UserRequest securedRequest = new UserRequest(email, userRequest.fullName(), userRequest.address());
+        UserRequest securedRequest = new UserRequest(email, userRequest.password(), userRequest.fullName(), userRequest.address());
         
         return userService.syncUser(keycloakId, securedRequest);
     }
     @PostMapping("/login")
     public UserResponse login(@RequestBody UserRequest userRequest) {
         try {
-            return userService.getUserByEmail(userRequest.email());
+            return userService.login(userRequest);
         } catch (Exception e) {
             // Auto-register if not found (Simplified Flow)
             String fakeId = java.util.UUID.randomUUID().toString();
@@ -48,7 +66,7 @@ public class UserController {
                           ? "New User" 
                           : userRequest.fullName();
                           
-            UserRequest registrationRequest = new UserRequest(userRequest.email(), name, userRequest.address());
+            UserRequest registrationRequest = new UserRequest(userRequest.email(), userRequest.password(), name, userRequest.address());
             return userService.syncUser(fakeId, registrationRequest);
         }
     }

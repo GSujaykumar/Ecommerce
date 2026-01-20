@@ -3,7 +3,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { ShopContext } from "../Context/ShopContext";
 
-import { FiShoppingCart, FiHeart, FiUser, FiSearch, FiMenu, FiX, FiEye, FiLogIn, FiMic } from "react-icons/fi";
+import { FiShoppingCart, FiHeart, FiUser, FiSearch, FiMenu, FiX, FiEye, FiLogIn, FiMic, FiLogOut } from "react-icons/fi";
 import { FiMoon, FiSun } from "react-icons/fi";
 
 
@@ -13,9 +13,10 @@ function Header() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const [isListening, setIsListening] = useState(false);
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
     const navigate = useNavigate();
 
-    const { cartItems, favoriteItems, setIsCartOpen, user } = useContext(ShopContext);
+    const { cartItems, favoriteItems, setIsCartOpen, user, logout } = useContext(ShopContext);
 
     const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
     const favCount = favoriteItems.length;
@@ -180,15 +181,64 @@ function Header() {
                     </button>
 
                     {/* User Profile */}
-                    <NavLink to="/login" className="ml-2 flex items-center gap-2 text-sm font-semibold hover:text-indigo-600 transition">
+                    <div className="relative">
                         {user ? (
-                            <img src={user.avatar || "https://ui-avatars.com/api/?name=User"} alt="User" className="w-8 h-8 rounded-full border border-gray-200 dark:border-gray-700 object-cover" />
+                            <button 
+                                onClick={() => setIsProfileOpen(!isProfileOpen)}
+                                className="ml-2 flex items-center gap-2 text-sm font-semibold hover:text-indigo-600 transition focus:outline-none"
+                            >
+                                <img src={user.avatar || `https://ui-avatars.com/api/?name=${user.fullName ? user.fullName.replace(" ", "+") : "User"}&background=random`} alt="User" className="w-8 h-8 rounded-full border border-gray-200 dark:border-gray-700 object-cover" />
+                            </button>
                         ) : (
-                            <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 flex items-center justify-center hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition" title="Login">
-                                <FiUser className="w-5 h-5 ml-0.5" />
-                            </div>
+                            <NavLink to="/login" className="ml-2 flex items-center gap-2 text-sm font-semibold hover:text-indigo-600 transition">
+                                <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 flex items-center justify-center hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition" title="Login">
+                                    <FiUser className="w-5 h-5 ml-0.5" />
+                                </div>
+                            </NavLink>
                         )}
-                    </NavLink>
+
+                        {/* Profile Dropdown */}
+                        {user && isProfileOpen && (
+                            <>
+                                <div className="fixed inset-0 z-10" onClick={() => setIsProfileOpen(false)}></div>
+                                <div className="absolute right-0 mt-3 w-64 origin-top-right rounded-xl bg-white dark:bg-gray-900 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none z-20 border border-gray-100 dark:border-gray-800">
+                                    <div className="px-4 py-4 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50 rounded-t-xl">
+                                        <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{user.fullName || "User"}</p>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">{user.email}</p>
+                                    </div>
+                                    <div className="py-2">
+                                        <NavLink 
+                                            to="/orders" 
+                                            onClick={() => setIsProfileOpen(false)}
+                                            className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-indigo-600 dark:hover:text-indigo-400 transition"
+                                        >
+                                            My Orders
+                                        </NavLink>
+                                        <NavLink 
+                                            to="/favorites" 
+                                            onClick={() => setIsProfileOpen(false)}
+                                            className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-indigo-600 dark:hover:text-indigo-400 transition"
+                                        >
+                                            Saved Items
+                                        </NavLink>
+                                    </div>
+                                    <div className="border-t border-gray-100 dark:border-gray-800 py-2">
+                                        <button
+                                            onClick={() => {
+                                                logout();
+                                                setIsProfileOpen(false);
+                                                navigate('/');
+                                            }}
+                                            className="flex w-full items-center px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 transition"
+                                        >
+                                            <FiLogOut className="mr-2 h-4 w-4" />
+                                            Sign out
+                                        </button>
+                                    </div>
+                                </div>
+                            </>
+                        )}
+                    </div>
                 </div>
             </nav>
 
@@ -225,7 +275,7 @@ function Header() {
                                     {darkMode ? <FiSun /> : <FiMoon />} {darkMode ? "Light Mode" : "Dark Mode"}
                                 </button>
                                 <NavLink to="/login" className="flex items-center gap-3 text-gray-600 dark:text-gray-300">
-                                    <FiUser /> Account
+                                    <FiUser /> {user ? "My Account" : "Login"}
                                 </NavLink>
                             </div>
                         </div>

@@ -1,5 +1,7 @@
 package com.ecommerce.user.service.impl;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 import com.ecommerce.user.dto.UserRequest;
 import com.ecommerce.user.dto.UserResponse;
 import com.ecommerce.user.model.User;
@@ -13,9 +15,11 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -27,10 +31,15 @@ public class UserServiceImpl implements UserService {
             user = existingUser.get();
             user.setFullName(userRequest.fullName());
             user.setAddress(userRequest.address());
+            // Only update password if provided and not empty
+            if (userRequest.password() != null && !userRequest.password().isEmpty()) {
+                user.setPassword(passwordEncoder.encode(userRequest.password()));
+            }
         } else {
             user = new User();
             user.setKeycloakId(keycloakId);
             user.setEmail(userRequest.email());
+            user.setPassword(passwordEncoder.encode(userRequest.password()));
             user.setFullName(userRequest.fullName());
             user.setAddress(userRequest.address());
         }
@@ -50,6 +59,17 @@ public class UserServiceImpl implements UserService {
     public UserResponse getUserByEmail(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
+        return mapToResponse(user);
+    }
+
+    @Override
+    public UserResponse login(UserRequest request) {
+        User user = userRepository.findByEmail(request.email())
+                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + request.email()));
+        
+        if (request.password() != null && !passwordEncoder.matches(request.password(), user.getPassword())) {
+             throw new RuntimeException("Invalid credentials");
+        }
         return mapToResponse(user);
     }
 

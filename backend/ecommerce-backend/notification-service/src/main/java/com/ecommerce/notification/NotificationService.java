@@ -22,7 +22,11 @@ public class NotificationService {
         message.setSubject("Order Confirmation: " + orderNumber);
         message.setText("Thank you for your order! Your order number is " + orderNumber);
         
-        javaMailSender.send(message);
-        log.info("Email sent to user for order success!");
+        try {
+            javaMailSender.send(message);
+            log.info("Email sent to user for order success!");
+        } catch (Exception e) {
+            log.error("Failed to send email notifcation", e);
+        }
     }
 }

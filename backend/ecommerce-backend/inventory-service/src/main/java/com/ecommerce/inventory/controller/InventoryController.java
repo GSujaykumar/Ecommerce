@@ -21,4 +21,12 @@ public class InventoryController {
     public List<InventoryResponse> isInStock(@RequestParam List<String> skuCode) {
         return inventoryService.isInStock(skuCode);
     }
+    
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public String addStock(@RequestBody com.ecommerce.inventory.dto.InventoryRequest inventoryRequest) {
+        inventoryService.addStock(inventoryRequest.skuCode(), inventoryRequest.quantity());
+        return "Stock added";
+    }
 }
+record InventoryRequest(String skuCode, Integer quantity) {}

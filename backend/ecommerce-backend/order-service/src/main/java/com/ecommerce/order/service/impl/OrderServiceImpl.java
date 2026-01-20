@@ -61,7 +61,7 @@ public class OrderServiceImpl implements OrderService {
         
         // Advanced Inter-Service Communication
         com.ecommerce.order.dto.InventoryResponse[] inventoryResponseArray = webClientBuilder.build().get()
-                .uri("http://localhost:8086/api/inventory",
+                .uri("http://inventory-service/api/inventory",
                         uriBuilder -> uriBuilder.queryParam("skuCode", skuCodes).build())
                 .retrieve()
                 .bodyToMono(com.ecommerce.order.dto.InventoryResponse[].class)
@@ -77,7 +77,7 @@ public class OrderServiceImpl implements OrderService {
         if(allProductsInStock) {
             // CALL PAYMENT SERVICE
             String paymentResponse = webClientBuilder.build().post()
-                .uri("http://localhost:8085/api/payment")
+                .uri("http://payment-service/api/payment")
                 .bodyValue(new com.ecommerce.order.dto.PaymentRequest(order.getTotalPrice(), order.getOrderNumber()))
                 .retrieve()
                 .bodyToMono(String.class)

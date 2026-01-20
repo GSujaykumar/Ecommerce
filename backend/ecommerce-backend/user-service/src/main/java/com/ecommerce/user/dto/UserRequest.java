@@ -1,3 +1,3 @@
 package com.ecommerce.user.dto;
 
-public record UserRequest(String email, String fullName, String address) {}
+public record UserRequest(String email, String password, String fullName, String address) {}

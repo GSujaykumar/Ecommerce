@@ -29,4 +29,17 @@ public class InventoryService {
                             .build()
                 ).toList();
     }
+    @Transactional
+    public void addStock(String skuCode, Integer quantity) {
+        // Find existing or create new
+        com.ecommerce.inventory.model.Inventory inventory = inventoryRepository.findBySkuCode(skuCode)
+                .orElse(com.ecommerce.inventory.model.Inventory.builder()
+                        .skuCode(skuCode)
+                        .quantity(0)
+                        .build());
+        
+        inventory.setQuantity(inventory.getQuantity() + quantity);
+        inventoryRepository.save(inventory);
+        log.info("Added {} stock to {}", quantity, skuCode);
+    }
 }
