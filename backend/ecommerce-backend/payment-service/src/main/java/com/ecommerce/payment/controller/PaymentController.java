@@ -2,29 +2,28 @@ package com.ecommerce.payment.controller;
 
 import org.springframework.web.bind.annotation.*;
 import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/payment")
 @Slf4j
-@lombok.RequiredArgsConstructor
+@RequiredArgsConstructor
 public class PaymentController {
     
-    private final com.ecommerce.payment.repository.PaymentRepository paymentRepository;
+    private final com.ecommerce.payment.service.PaymentService paymentService;
 
     @PostMapping
     public String makePayment(@RequestBody PaymentRequest paymentRequest) {
-        log.info("Received payment request for amount: {}", paymentRequest.amount());
+        log.info("Received payment request for Order: {}, Amount: {}", paymentRequest.orderId(), paymentRequest.amount());
         
-        com.ecommerce.payment.model.Payment payment = com.ecommerce.payment.model.Payment.builder()
-            .orderId(paymentRequest.orderId())
-            .amount(paymentRequest.amount())
-            .paymentStatus("SUCCESS")
-            .build();
-            
-        paymentRepository.save(payment);
-        log.info("Payment saved: {}", payment);
+        boolean success = paymentService.processPayment(paymentRequest.orderId(), paymentRequest.amount());
         
-        return "Payment Successful";
+        if (success) {
+            return "Payment Successful";
+        } else {
+            return "Payment Failed";
+        }
     }
 }
 

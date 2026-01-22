@@ -10,5 +10,4 @@ com\ecommerce\product\exception\ProductNotFoundException.class
 com\ecommerce\product\config\SecurityConfig.class
 com\ecommerce\product\ProductServiceApplication.class
 com\ecommerce\product\model\Product$ProductBuilder.class
-com\ecommerce\product\config\WebConfig.class
 com\ecommerce\product\repository\ProductRepository.class

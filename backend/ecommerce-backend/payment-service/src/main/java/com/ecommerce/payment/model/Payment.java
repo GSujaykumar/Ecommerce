@@ -20,4 +20,5 @@ public class Payment {
     private String orderId;
     private BigDecimal amount;
     private String paymentStatus; // e.g., "SUCCESS"
+    private java.time.LocalDateTime timestamp;
 }

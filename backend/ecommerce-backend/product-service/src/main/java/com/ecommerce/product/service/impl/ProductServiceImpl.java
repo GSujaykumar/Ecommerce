@@ -36,12 +36,14 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductResponse> getAllProducts(String category) {
+        log.info("Fetching all products for category: {}", category);
         List<Product> products;
         if (category != null && !category.isEmpty()) {
             products = productRepository.findByCategoryIgnoreCase(category);
         } else {
             products = productRepository.findAll();
         }
+        log.info("Found {} products", products.size());
         return products.stream().map(this::mapToProductResponse).toList();
     }
 

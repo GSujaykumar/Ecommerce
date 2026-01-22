@@ -1,4 +1,5 @@
 import React, { useContext, useState } from 'react';
+import { makePaymentApi, placeOrder } from '../api';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { ShopContext } from '../Context/ShopContext';
@@ -23,6 +24,7 @@ const CheckoutForm = () => {
     const [shipping, setShipping] = useState({
         name: '',
         email: '',
+        mobile: '',
         address: '',
         city: '',
         zip: '',
@@ -52,8 +54,7 @@ const CheckoutForm = () => {
             }
         }
 
-        // Simulate payment processing
-        setTimeout(async () => {
+        try {
             let paymentResult = {};
 
             if (paymentMethod === 'card') {
@@ -73,15 +74,18 @@ const CheckoutForm = () => {
                 }
                 paymentResult = pm;
             } else {
-                // Mock success for UPI / COD
+                // Success for UPI / COD
                 paymentResult = { id: `MOCK-${paymentMethod.toUpperCase()}-123` };
             }
 
-            console.log('Payment Success:', paymentResult);
+            console.log('Payment Method Verified:', paymentResult);
 
-            // Create Order Object
+            // Place Order (Backend handles inventory check, payment-service call, and Kafka notification)
+            const orderNumber = await placeOrder(cartItems, total, shipping.email, shipping.mobile);
+
+            // Update Frontend State
             const newOrder = {
-                id: `ORD-${Math.floor(Math.random() * 1000000)}`,
+                id: orderNumber,
                 date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
                 total: formatPrice(total),
                 status: 'Processing',
@@ -94,18 +98,15 @@ const CheckoutForm = () => {
             };
 
             addOrder(newOrder);
-            setLastOrder(newOrder); // Save order for invoice
+            setLastOrder(newOrder);
             setSuccess(true);
             clearCart();
+        } catch (err) {
+            console.error('Payment Flow Error:', err);
+            setError(err.message || 'An error occurred during order processing.');
+        } finally {
             setLoading(false);
-
-            // Redirect after delay (longer now to allow invoice download if needed, or user can click 'View Order')
-            // Removing auto-redirect to let user choose
-            // setTimeout(() => {
-            //     navigate('/order-history');
-            // }, 5000);
-
-        }, 1500);
+        }
     };
 
     if (cartItems.length === 0 && !success) {
@@ -179,6 +180,10 @@ const CheckoutForm = () => {
                                 <div className="sm:col-span-2">
                                     <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email Address</label>
                                     <input type="email" id="email" name="email" required value={shipping.email} onChange={handleInputChange} className="premium-input" placeholder="john@example.com" />
+                                </div>
+                                <div className="sm:col-span-2">
+                                    <label htmlFor="mobile" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Mobile Number</label>
+                                    <input type="tel" id="mobile" name="mobile" required value={shipping.mobile} onChange={handleInputChange} className="premium-input" placeholder="+1 (555) 000-0000" />
                                 </div>
                                 <div className="sm:col-span-2">
                                     <label htmlFor="address" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Address</label>

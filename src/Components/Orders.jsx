@@ -8,27 +8,41 @@ import { Link } from 'react-router-dom';
 const Orders = () => {
     // Mock orders since we don't have a real backend for order history yet
     // In a real app, this would come from the ShopContext or an API
-    const mockOrders = [
-        {
-            id: "ORD-7782-XJ",
-            date: "Oct 24, 2023",
-            total: 245.99,
-            status: "Delivered",
-            items: [
-                { id: 1, title: "Urban Tech Hoodie", image: "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg", quantity: 1, price: 120.00 },
-                { id: 2, title: "Cargo Joggers", image: "https://fakestoreapi.com/img/71-3HjGNDUL._AC_SY879._SX._UX._SY._UY_.jpg", quantity: 2, price: 62.99 }
-            ]
-        },
-        {
-            id: "ORD-9921-MC",
-            date: "Nov 02, 2023",
-            total: 89.50,
-            status: "In Transit",
-            items: [
-                { id: 3, title: "Cyberpunk Windbreaker", image: "https://fakestoreapi.com/img/71li-ujtlUL._AC_UX679_.jpg", quantity: 1, price: 89.50 }
-            ]
-        }
-    ];
+    const [orders, setOrders] = React.useState([]);
+    const [loading, setLoading] = React.useState(true);
+
+    React.useEffect(() => {
+        const fetchOrders = async () => {
+            try {
+                // Dynamic Import to avoid cycle if necessary, or just use ShopContext
+                // But since we want direct component data loading pattern here matching styles:
+                const { getMyOrders } = await import('../api');
+                const backendOrders = await getMyOrders();
+
+                if (backendOrders) {
+                    const mappedOrders = backendOrders.map(o => ({
+                        id: o.orderNumber,
+                        date: o.placedAt ? new Date(o.placedAt).toLocaleDateString() : 'Just Now',
+                        total: o.totalPrice,
+                        status: o.status || "Processing",
+                        items: (o.items || []).map(i => ({
+                            id: i.skuCode,
+                            title: i.skuCode, // We might need to fetch product details separately for titles/images
+                            image: "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg", // Placeholder until product linking
+                            quantity: i.quantity,
+                            price: i.price
+                        }))
+                    }));
+                    setOrders(mappedOrders.reverse());
+                }
+            } catch (error) {
+                console.error("Failed to load orders", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchOrders();
+    }, []);
 
     const getStatusColor = (status) => {
         switch (status) {
@@ -53,7 +67,7 @@ const Orders = () => {
                 </div>
 
                 <div className="space-y-6">
-                    {mockOrders.map((order, index) => (
+                    {loading ? <div className="text-center py-10">Loading orders...</div> : orders.length === 0 ? <div className="text-center py-10">No orders found.</div> : orders.map((order, index) => (
                         <motion.div
                             key={order.id}
                             initial={{ opacity: 0, y: 20 }}

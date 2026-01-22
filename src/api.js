@@ -42,6 +42,7 @@ const userApi = createServiceApi(USER_URL);
 const productApi = createServiceApi(PRODUCT_URL);
 const orderApi = createServiceApi(ORDER_URL);
 const cartApi = createServiceApi(CART_URL);
+const paymentApi = createServiceApi(PAYMENT_URL);
 
 // --- HELPER MAPPERS ---
 const mapBackendProductToFrontend = (p) => ({
@@ -55,6 +56,16 @@ const mapBackendProductToFrontend = (p) => ({
 });
 
 // --- PRODUCTS ---
+export const fetchProductById = async (id) => {
+    try {
+        const response = await productApi.get(`/products/${id}`);
+        return mapBackendProductToFrontend(response.data);
+    } catch (error) {
+        console.error("Backend Error (Product By ID):", error);
+        return null;
+    }
+};
+
 export const getAllProducts = async () => {
     try {
         const response = await productApi.get('/products');
@@ -75,6 +86,10 @@ export const fetchProductsByCategory = async (category) => {
         return [];
     }
 };
+
+export const fetchMensProducts = () => fetchProductsByCategory('men');
+export const fetchWomensProducts = () => fetchProductsByCategory('women');
+export const fetchKidsProducts = () => fetchProductsByCategory('kids');
 
 // --- AUTH ---
 export const loginUser = async (username, password, fullName = "New User", address = "Unknown") => {
@@ -136,14 +151,16 @@ export const addToCart = async (product, quantity = 1) => {
 };
 
 // --- ORDERS ---
-export const placeOrder = async (cartItems, total) => {
+export const placeOrder = async (cartItems, total, email, mobileNumber) => {
     try {
         const orderRequest = {
             orderLineItemsDtoList: cartItems.map(item => ({
                 skuCode: item.skuCode || item.id || item.productName,
                 price: item.price,
                 quantity: item.quantity
-            }))
+            })),
+            email: email,
+            mobileNumber: mobileNumber
         };
         const response = await orderApi.post('/orders', orderRequest);
         return response.data;
@@ -160,6 +177,17 @@ export const getMyOrders = async () => {
     } catch (error) {
         console.warn("Backend Error (Get Orders):", error);
         return [];
+    }
+};
+
+// --- PAYMENT ---
+export const makePaymentApi = async (orderId, amount) => {
+    try {
+        const response = await paymentApi.post('/payment', { amount, orderId });
+        return response.data;
+    } catch (error) {
+        console.error("Backend Error (Payment):", error);
+        throw error;
     }
 };
 

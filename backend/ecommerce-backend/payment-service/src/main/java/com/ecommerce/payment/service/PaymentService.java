@@ -35,7 +35,7 @@ public class PaymentService {
         Payment payment = Payment.builder()
                 .orderId(orderId)
                 .amount(amount)
-                .status(status)
+                .paymentStatus(status)
                 .timestamp(LocalDateTime.now())
                 .build();
         paymentRepository.save(payment);

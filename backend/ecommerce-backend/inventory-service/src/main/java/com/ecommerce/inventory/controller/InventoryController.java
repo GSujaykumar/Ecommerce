@@ -1,6 +1,7 @@
 package com.ecommerce.inventory.controller;
 
 import com.ecommerce.inventory.dto.InventoryResponse;
+import com.ecommerce.inventory.dto.InventoryRequest;
 import com.ecommerce.inventory.service.InventoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,15 +19,15 @@ public class InventoryController {
     // http://localhost:8082/api/inventory?skuCode=iphone-13&skuCode=iphone-13-red
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<InventoryResponse> isInStock(@RequestParam List<String> skuCode) {
+    public List<InventoryResponse> isInStock(@RequestParam(value = "skuCode") List<String> skuCode) {
         return inventoryService.isInStock(skuCode);
     }
     
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public String addStock(@RequestBody com.ecommerce.inventory.dto.InventoryRequest inventoryRequest) {
+    public String addStock(@RequestBody InventoryRequest inventoryRequest) {
         inventoryService.addStock(inventoryRequest.skuCode(), inventoryRequest.quantity());
         return "Stock added";
     }
 }
-record InventoryRequest(String skuCode, Integer quantity) {}
+

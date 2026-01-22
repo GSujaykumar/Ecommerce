@@ -1,6 +1,7 @@
 com\ecommerce\inventory\InventoryServiceApplication.class
 com\ecommerce\inventory\config\WebConfig.class
 com\ecommerce\inventory\controller\InventoryController.class
+com\ecommerce\inventory\dto\InventoryRequest.class
 com\ecommerce\inventory\dto\InventoryResponse.class
 com\ecommerce\inventory\InventoryDataInitializer.class
 com\ecommerce\inventory\model\Inventory$InventoryBuilder.class

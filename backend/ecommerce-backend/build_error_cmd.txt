@@ -1,0 +1,41 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ------------------< com.ecommerce:inventory-service >-------------------
+[INFO] Building inventory-service 1.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ inventory-service ---
+[WARNING] Using platform encoding (Cp1252 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ inventory-service ---
+[INFO] Recompiling the module because of changed source code.
+[WARNING] File encoding has not been set, using platform encoding windows-1252, i.e. build is platform dependent!
+[INFO] Compiling 8 source files with javac [debug target 17] to target\classes
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /C:/Users/admin/Desktop/EcommerReactUI/EcommerceReact/backend/ecommerce-backend/inventory-service/src/main/java/com/ecommerce/inventory/controller/InventoryController.java:[27,68] cannot find symbol
+  symbol:   class InventoryRequest
+  location: package com.ecommerce.inventory.dto
+[INFO] 1 error
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  5.442 s
+[INFO] Finished at: 2026-01-21T17:06:39+05:30
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.13.0:compile (default-compile) on project inventory-service: Compilation failure
+[ERROR] /C:/Users/admin/Desktop/EcommerReactUI/EcommerceReact/backend/ecommerce-backend/inventory-service/src/main/java/com/ecommerce/inventory/controller/InventoryController.java:[27,68] cannot find symbol
+[ERROR]   symbol:   class InventoryRequest
+[ERROR]   location: package com.ecommerce.inventory.dto
+[ERROR] 
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

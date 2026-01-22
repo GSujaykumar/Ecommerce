@@ -1,0 +1,70 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------< com.ecommerce:order-service >---------------------
+[INFO] Building order-service 1.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:3.2.1:run (default-cli) > test-compile @ order-service >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ order-service ---
+[WARNING] Using platform encoding (Cp1252 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ order-service ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ order-service ---
+[WARNING] Using platform encoding (Cp1252 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] skip non existing resourceDirectory C:\Users\admin\Desktop\EcommerReactUI\EcommerceReact\backend\ecommerce-backend\order-service\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ order-service ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] <<< spring-boot:3.2.1:run (default-cli) < test-compile @ order-service <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:3.2.1:run (default-cli) @ order-service ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v3.2.1)
+
+2026-01-21T17:33:17.584+05:30  INFO 2072 --- [order-service] [           main] c.e.order.OrderServiceApplication        : Starting OrderServiceApplication using Java 17.0.12 with PID 2072 (C:\Users\admin\Desktop\EcommerReactUI\EcommerceReact\backend\ecommerce-backend\order-service\target\classes started by admin in C:\Users\admin\Desktop\EcommerReactUI\EcommerceReact\backend\ecommerce-backend\order-service)
+2026-01-21T17:33:17.586+05:30  INFO 2072 --- [order-service] [           main] c.e.order.OrderServiceApplication        : No active profile set, falling back to 1 default profile: "default"
+2026-01-21T17:33:19.042+05:30  WARN 2072 --- [order-service] [           main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.support.BeanDefinitionOverrideException: Invalid bean definition with name 'webClientBuilder' defined in com.ecommerce.order.OrderServiceApplication: Cannot register bean definition [Root bean: class [null]; scope=; abstract=false; lazyInit=null; autowireMode=3; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=orderServiceApplication; factoryMethodName=webClientBuilder; initMethodNames=null; destroyMethodNames=[(inferred)]; defined in com.ecommerce.order.OrderServiceApplication] for bean 'webClientBuilder' since there is already [Root bean: class [null]; scope=; abstract=false; lazyInit=null; autowireMode=3; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=webClientConfig; factoryMethodName=webClientBuilder; initMethodNames=null; destroyMethodNames=[(inferred)]; defined in class path resource [com/ecommerce/order/config/WebClientConfig.class]] bound.
+2026-01-21T17:33:19.073+05:30  INFO 2072 --- [order-service] [           main] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2026-01-21T17:33:19.108+05:30 ERROR 2072 --- [order-service] [           main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+The bean 'webClientBuilder', defined in com.ecommerce.order.OrderServiceApplication, could not be registered. A bean with that name has already been defined in class path resource [com/ecommerce/order/config/WebClientConfig.class] and overriding is disabled.
+
+Action:
+
+Consider renaming one of the beans or enabling overriding by setting spring.main.allow-bean-definition-overriding=true
+
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  9.019 s
+[INFO] Finished at: 2026-01-21T17:33:19+05:30
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.springframework.boot:spring-boot-maven-plugin:3.2.1:run (default-cli) on project order-service: Process terminated with exit code: 1 -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException

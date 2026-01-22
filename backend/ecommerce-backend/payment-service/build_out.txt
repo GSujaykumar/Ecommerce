@@ -1,0 +1,53 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -------------------< com.ecommerce:payment-service >--------------------
+[INFO] Building payment-service 1.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ payment-service ---
+[INFO] Deleting C:\Users\admin\Desktop\EcommerReactUI\EcommerceReact\backend\ecommerce-backend\payment-service\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ payment-service ---
+[WARNING] Using platform encoding (Cp1252 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ payment-service ---
+[INFO] Recompiling the module because of changed source code.
+[WARNING] File encoding has not been set, using platform encoding windows-1252, i.e. build is platform dependent!
+[INFO] Compiling 6 source files with javac [debug target 17] to target\classes
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /C:/Users/admin/Desktop/EcommerReactUI/EcommerceReact/backend/ecommerce-backend/payment-service/src/main/java/com/ecommerce/payment/config/SecurityConfig.java:[5,67] package org.springframework.security.config.annotation.web.builders does not exist
+[ERROR] /C:/Users/admin/Desktop/EcommerReactUI/EcommerceReact/backend/ecommerce-backend/payment-service/src/main/java/com/ecommerce/payment/config/SecurityConfig.java:[6,40] package org.springframework.security.web does not exist
+[ERROR] /C:/Users/admin/Desktop/EcommerReactUI/EcommerceReact/backend/ecommerce-backend/payment-service/src/main/java/com/ecommerce/payment/config/SecurityConfig.java:[12,52] cannot find symbol
+  symbol:   class HttpSecurity
+  location: class com.ecommerce.payment.config.SecurityConfig
+[ERROR] /C:/Users/admin/Desktop/EcommerReactUI/EcommerceReact/backend/ecommerce-backend/payment-service/src/main/java/com/ecommerce/payment/config/SecurityConfig.java:[12,12] cannot find symbol
+  symbol:   class SecurityFilterChain
+  location: class com.ecommerce.payment.config.SecurityConfig
+[INFO] 4 errors 
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  8.550 s
+[INFO] Finished at: 2026-01-21T12:49:37+05:30
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.13.0:compile (default-compile) on project payment-service: Compilation failure: Compilation failure: 
+[ERROR] /C:/Users/admin/Desktop/EcommerReactUI/EcommerceReact/backend/ecommerce-backend/payment-service/src/main/java/com/ecommerce/payment/config/SecurityConfig.java:[5,67] package org.springframework.security.config.annotation.web.builders does not exist
+[ERROR] /C:/Users/admin/Desktop/EcommerReactUI/EcommerceReact/backend/ecommerce-backend/payment-service/src/main/java/com/ecommerce/payment/config/SecurityConfig.java:[6,40] package org.springframework.security.web does not exist
+[ERROR] /C:/Users/admin/Desktop/EcommerReactUI/EcommerceReact/backend/ecommerce-backend/payment-service/src/main/java/com/ecommerce/payment/config/SecurityConfig.java:[12,52] cannot find symbol
+[ERROR]   symbol:   class HttpSecurity
+[ERROR]   location: class com.ecommerce.payment.config.SecurityConfig
+[ERROR] /C:/Users/admin/Desktop/EcommerReactUI/EcommerceReact/backend/ecommerce-backend/payment-service/src/main/java/com/ecommerce/payment/config/SecurityConfig.java:[12,12] cannot find symbol
+[ERROR]   symbol:   class SecurityFilterChain
+[ERROR]   location: class com.ecommerce.payment.config.SecurityConfig
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
