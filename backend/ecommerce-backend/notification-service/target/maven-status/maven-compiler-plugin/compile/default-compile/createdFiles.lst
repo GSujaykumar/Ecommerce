@@ -1,3 +1,0 @@
-com\ecommerce\notification\NotificationServiceApplication.class
-com\ecommerce\notification\service\NotificationService.class
-com\ecommerce\notification\event\OrderPlacedEvent.class

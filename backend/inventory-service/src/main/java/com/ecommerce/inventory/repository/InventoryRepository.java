@@ -1,0 +1,11 @@
+package com.ecommerce.inventory.repository;
+
+import com.ecommerce.inventory.model.Inventory;
+import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.Optional;
+
+public interface InventoryRepository extends JpaRepository<Inventory, Long> {
+    Optional<Inventory> findBySkuCode(String skuCode);
+    java.util.List<Inventory> findBySkuCodeIn(java.util.List<String> skuCodes);
+    boolean existsBySkuCode(String skuCode);
+}

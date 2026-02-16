@@ -1,0 +1,13 @@
+package com.ecommerce.product.service;
+
+import com.ecommerce.product.dto.ProductRequest;
+import com.ecommerce.product.dto.ProductResponse;
+import java.util.List;
+
+public interface ProductService {
+    ProductResponse createProduct(ProductRequest productRequest);
+    List<ProductResponse> getAllProducts(String category, String subCategory);
+    List<String> getAllCategories();
+    List<String> getSubCategoriesByCategory(String category);
+    void deleteProduct(Long id);
+}

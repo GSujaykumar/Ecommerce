@@ -3,15 +3,13 @@ services:
     image: quay.io/keycloak/keycloak:23.0.0
     container_name: keycloak
     environment:
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
+      KEYCLOAK_ADMIN: Sujay kumar 
+      KEYCLOAK_ADMIN_PASSWORD: Sujay kumar
     ports:
       - "8181:8080"
     command: start-dev
     volumes:
       - keycloak_data:/opt/keycloak/data
-
-
 
   redis:
     image: redis:alpine
@@ -25,7 +23,7 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
     ports:
       - "22181:2181"
-  
+
   kafka:
     image: confluentinc/cp-kafka:7.5.0
     depends_on:
@@ -50,7 +48,7 @@ services:
     image: openzipkin/zipkin
     ports:
       - "9411:9411"
-      
+
   prometheus:
     image: prom/prometheus
     ports:
@@ -67,6 +65,122 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  discovery-server:
+    build: ./discovery-server
+    container_name: discovery-server
+    ports:
+      - "8761:8761"
+    environment:
+      - SPRING_ZIPKIN_BASE_URL=http://zipkin:9411
+    depends_on:
+      - zipkin
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_ZIPKIN_BASE_URL=http://zipkin:9411
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka
+    depends_on:
+      - discovery-server
+      - zipkin
+      - keycloak
+
+  product-service:
+    build: ./product-service
+    container_name: product-service
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_ZIPKIN_BASE_URL=http://zipkin:9411
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/ecommerce
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka
+    depends_on:
+      - discovery-server
+      - mysql
+      - zipkin
+
+  order-service:
+    build: ./order-service
+    container_name: order-service
+    environment:
+      - SPRING_ZIPKIN_BASE_URL=http://zipkin:9411
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/ecommerce
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+    depends_on:
+      - discovery-server
+      - mysql
+      - zipkin
+      - kafka
+
+  inventory-service:
+    build: ./inventory-service
+    container_name: inventory-service
+    environment:
+      - SPRING_ZIPKIN_BASE_URL=http://zipkin:9411
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/ecommerce
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka
+    depends_on:
+      - discovery-server
+      - mysql
+      - zipkin
+
+  notification-service:
+    build: ./notification-service
+    container_name: notification-service
+    environment:
+      - SPRING_ZIPKIN_BASE_URL=http://zipkin:9411
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+    depends_on:
+      - discovery-server
+      - zipkin
+      - kafka
+      - maildev
+
+  payment-service:
+    build: ./payment-service
+    container_name: payment-service
+    environment:
+      - SPRING_ZIPKIN_BASE_URL=http://zipkin:9411
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/ecommerce
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka
+    depends_on:
+      - discovery-server
+      - mysql
+      - zipkin
+
+  cart-service:
+    build: ./cart-service
+    container_name: cart-service
+    environment:
+      - SPRING_ZIPKIN_BASE_URL=http://zipkin:9411
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka
+    depends_on:
+      - discovery-server
+      - zipkin
+      - redis
+
+  user-service:
+    build: ./user-service
+    container_name: user-service
+    environment:
+      - SPRING_ZIPKIN_BASE_URL=http://zipkin:9411
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/ecommerce
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka
+      - KEYCLOAK_SERVER_URL=http://keycloak:8080
+    depends_on:
+      - discovery-server
+      - mysql
+      - zipkin
+      - keycloak
 
 volumes:
   keycloak_data:
