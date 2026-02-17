@@ -9,5 +9,6 @@ public interface ProductService {
     List<ProductResponse> getAllProducts(String category, String subCategory);
     List<String> getAllCategories();
     List<String> getSubCategoriesByCategory(String category);
+    ProductResponse getProductById(Long id);
     void deleteProduct(Long id);
 }

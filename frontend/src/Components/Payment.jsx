@@ -13,7 +13,7 @@ const stripePromise = loadStripe('pk_test_TYooMQauvdEDq54NiTphI7jx'); // Public 
 const CheckoutForm = () => {
     const stripe = useStripe();
     const elements = useElements();
-    const { cartItems, clearCart, addOrder } = useContext(ShopContext);
+    const { cartItems, clearCart, addOrder, user } = useContext(ShopContext);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
@@ -22,10 +22,10 @@ const CheckoutForm = () => {
 
     // Mock Shipping State
     const [shipping, setShipping] = useState({
-        name: '',
-        email: '',
-        mobile: '',
-        address: '',
+        name: user?.fullName || '',
+        email: user?.email || '',
+        mobile: user?.mobile || '',
+        address: user?.address || '',
         city: '',
         zip: '',
         country: 'US'
@@ -108,6 +108,26 @@ const CheckoutForm = () => {
             setLoading(false);
         }
     };
+
+    if (!user) {
+        return (
+            <div className="flex flex-col items-center justify-center py-20 px-4">
+                <div className="bg-amber-100 dark:bg-amber-900/30 p-6 rounded-full mb-6">
+                    <FiLock className="text-4xl text-amber-600" />
+                </div>
+                <h2 className="text-2xl font-bold dark:text-white mb-2">Login Required</h2>
+                <p className="text-gray-500 dark:text-gray-400 mb-8 max-w-md text-center">
+                    You must be logged in to complete your purchase and secure your order.
+                </p>
+                <button
+                    onClick={() => navigate('/login', { state: { from: '/payment' } })}
+                    className="btn-primary flex items-center gap-2"
+                >
+                    <FiLock /> Sign In to Continue
+                </button>
+            </div>
+        );
+    }
 
     if (cartItems.length === 0 && !success) {
         // ... existing empty state ...

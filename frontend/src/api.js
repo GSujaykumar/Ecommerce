@@ -1,9 +1,10 @@
 import axios from 'axios';
 
 // DIRECT SERVICE URLS (Via Gateway)
-const GATEWAY_URL = 'http://localhost:8080/api';
+// DIRECT SERVICE URLS (Via Gateway)
+const GATEWAY_URL = 'http://localhost:8080';
 const USER_URL = GATEWAY_URL;
-const PRODUCT_URL = 'http://localhost:8082/api';
+const PRODUCT_URL = GATEWAY_URL;
 const ORDER_URL = GATEWAY_URL;
 const CART_URL = GATEWAY_URL;
 const PAYMENT_URL = GATEWAY_URL;
@@ -59,7 +60,7 @@ const mapBackendProductToFrontend = (p) => ({
 // --- PRODUCTS ---
 export const fetchProductById = async (id) => {
     try {
-        const response = await productApi.get(`/products/${id}`);
+        const response = await productApi.get(`/api/products/${id}`);
         return mapBackendProductToFrontend(response.data);
     } catch (error) {
         console.error("Backend Error (Product By ID):", error);
@@ -69,7 +70,7 @@ export const fetchProductById = async (id) => {
 
 export const getAllProducts = async () => {
     try {
-        const response = await productApi.get('/products');
+        const response = await productApi.get('/api/products');
         return response.data.map(mapBackendProductToFrontend);
     } catch (error) {
         console.error("Backend Error (Products):", error);
@@ -79,7 +80,7 @@ export const getAllProducts = async () => {
 
 export const fetchProductsByCategory = async (category, subCategory = '') => {
     try {
-        let url = '/products';
+        let url = '/api/products';
         const params = new URLSearchParams();
         if (category && category !== 'all') params.append('category', category);
         if (subCategory) params.append('subCategory', subCategory);
@@ -110,7 +111,7 @@ export const fetchMenSlippers = () => fetchProductsByCategory('men', 'slippers')
 
 export const getAllCategories = async () => {
     try {
-        const response = await productApi.get('/products/categories');
+        const response = await productApi.get('/api/products/categories');
         return response.data;
     } catch (error) {
         console.error("Backend Error (Get Categories):", error);
@@ -120,7 +121,7 @@ export const getAllCategories = async () => {
 
 export const fetchSubCategoriesByCategory = async (category) => {
     try {
-        const response = await productApi.get(`/products/sub-categories/${category}`);
+        const response = await productApi.get(`/api/products/sub-categories/${category}`);
         return response.data;
     } catch (error) {
         console.error("Backend Error (Get Sub Categories):", error);
@@ -132,7 +133,7 @@ export const fetchSubCategoriesByCategory = async (category) => {
 export const loginUser = async (username, password, fullName = "New User", address = "Unknown") => {
     try {
         // Dynamic Login against User Service
-        const response = await userApi.post('/users/login', {
+        const response = await userApi.post('/api/users/login', {
             email: username,
             password: password,
             fullName: fullName,
@@ -145,7 +146,7 @@ export const loginUser = async (username, password, fullName = "New User", addre
     } catch (error) {
         // Fallback for registration/simulation if user not found (or 404)
         if (error.response && error.response.status === 404) {
-            const registerResponse = await userApi.post('/users/register', {
+            const registerResponse = await userApi.post('/api/users/register', {
                 email: username,
                 fullName: fullName !== "New User" ? fullName : username.split('@')[0],
                 address: address
@@ -162,7 +163,7 @@ export const loginUser = async (username, password, fullName = "New User", addre
 // --- CART ---
 export const getCart = async () => {
     try {
-        const response = await cartApi.get('/cart');
+        const response = await cartApi.get('/api/cart');
         return response.data;
     } catch (error) {
         console.warn("Backend Error (Cart):", error);
@@ -179,7 +180,7 @@ export const addToCart = async (product, quantity = 1) => {
             price: product.price,
             imageUrl: product.image
         };
-        const response = await cartApi.post('/cart', item);
+        const response = await cartApi.post('/api/cart', item);
         return response.data;
     } catch (error) {
         console.error("Backend Error (AddToCart):", error);
@@ -199,7 +200,7 @@ export const placeOrder = async (cartItems, total, email, mobileNumber) => {
             email: email,
             mobileNumber: mobileNumber
         };
-        const response = await orderApi.post('/orders', orderRequest);
+        const response = await orderApi.post('/api/orders', orderRequest);
         return response.data;
     } catch (error) {
         console.error("Backend Error (Order):", error);
@@ -209,7 +210,7 @@ export const placeOrder = async (cartItems, total, email, mobileNumber) => {
 
 export const getMyOrders = async () => {
     try {
-        const response = await orderApi.get('/orders');
+        const response = await orderApi.get('/api/orders');
         return response.data;
     } catch (error) {
         console.warn("Backend Error (Get Orders):", error);
@@ -220,7 +221,7 @@ export const getMyOrders = async () => {
 // --- PAYMENT ---
 export const makePaymentApi = async (orderId, amount) => {
     try {
-        const response = await paymentApi.post('/payment', { amount, orderId });
+        const response = await paymentApi.post('/api/payment', { amount, orderId });
         return response.data;
     } catch (error) {
         console.error("Backend Error (Payment):", error);
@@ -233,9 +234,11 @@ export const fetchProducts = async () => getAllProducts();
 
 export const checkBackendHealth = async () => {
     try {
-        await productApi.get('/products');
+        await productApi.get('/api/products');
+        console.log("Backend connection successful");
         return true;
     } catch (e) {
+        console.error("Backend connection failed:", e.message);
         return false;
     }
 };

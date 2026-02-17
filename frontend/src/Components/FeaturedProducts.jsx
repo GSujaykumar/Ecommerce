@@ -14,8 +14,10 @@ function FeaturedProducts() {
   useEffect(() => {
     const getProducts = async () => {
       const data = await fetchProducts();
-      setAllProducts(data);
-      setVisibleProducts(data.slice(0, 8)); // Initial 8
+      // Shuffle for diversity on homepage
+      const shuffled = [...data].sort(() => 0.5 - Math.random());
+      setAllProducts(shuffled);
+      setVisibleProducts(shuffled.slice(0, 8)); // Initial 8
       setLoading(false);
     };
     getProducts();

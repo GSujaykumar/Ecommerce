@@ -36,6 +36,10 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @CircuitBreaker(name = "inventory", fallbackMethod = "inventoryFallback")
     public String placeOrder(OrderRequest orderRequest, String userId) {
+        if (userId == null || userId.isEmpty() || userId.equals("test-user")) {
+            throw new IllegalArgumentException("User must be logged in to place an order");
+        }
+        
         Order order = new Order();
         order.setOrderNumber(UUID.randomUUID().toString());
         order.setUserId(userId);
@@ -83,7 +87,7 @@ public class OrderServiceImpl implements OrderService {
             try {
                 String paymentResponse = webClientBuilder.build().post()
                     .uri("http://payment-service/api/payment")
-                    .bodyValue(new PaymentRequest(order.getTotalPrice(), order.getOrderNumber()))
+                    .bodyValue(new PaymentRequest(order.getTotalPrice(), order.getOrderNumber(), userId))
                     .retrieve()
                     .bodyToMono(String.class)
                     .block();

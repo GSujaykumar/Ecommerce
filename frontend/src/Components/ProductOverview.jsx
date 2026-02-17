@@ -456,7 +456,7 @@ export default function ProductOverview() {
 
         {/* Related Products - Full Width */}
         <div className="col-span-1 lg:col-span-2 mt-16">
-          <RelatedProducts currentProductId={product.id} />
+          <RelatedProducts currentProductId={product.id} category={product.category} />
         </div>
 
         {/* Recently Viewed - Full Width */}

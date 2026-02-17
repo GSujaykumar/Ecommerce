@@ -41,7 +41,8 @@ export default function Login() {
             }
 
             login(userData, token);
-            navigate("/");
+            const origin = location.state?.from || "/";
+            navigate(origin);
         } catch (err) {
             console.error(err);
             setError("Authentication failed. Please try again.");

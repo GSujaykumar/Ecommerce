@@ -39,6 +39,12 @@ public class ProductController {
         return productService.getSubCategoriesByCategory(category);
     }
 
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ProductResponse getProductById(@PathVariable Long id) {
+        return productService.getProductById(id);
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')") // Only ADMINs allowed

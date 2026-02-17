@@ -15,9 +15,10 @@ public class PaymentController {
 
     @PostMapping
     public String makePayment(@RequestBody PaymentRequest paymentRequest) {
-        log.info("Received payment request for Order: {}, Amount: {}", paymentRequest.orderId(), paymentRequest.amount());
+        log.info("Received payment request for Order: {}, Amount: {}, User: {}", 
+                paymentRequest.orderId(), paymentRequest.amount(), paymentRequest.userId());
         
-        boolean success = paymentService.processPayment(paymentRequest.orderId(), paymentRequest.amount());
+        boolean success = paymentService.processPayment(paymentRequest.orderId(), paymentRequest.amount(), paymentRequest.userId());
         
         if (success) {
             return "Payment Successful";
@@ -27,4 +28,4 @@ public class PaymentController {
     }
 }
 
-record PaymentRequest(java.math.BigDecimal amount, String orderId) {}
+record PaymentRequest(java.math.BigDecimal amount, String orderId, String userId) {}

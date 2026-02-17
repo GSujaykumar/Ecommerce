@@ -17,6 +17,7 @@ public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String userId;
     private String orderId;
     private BigDecimal amount;
     private String paymentStatus; // e.g., "SUCCESS"

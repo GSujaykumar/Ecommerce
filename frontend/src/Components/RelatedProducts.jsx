@@ -4,29 +4,37 @@ import { fetchProducts } from '../api';
 import { FiArrowRight } from 'react-icons/fi';
 import { formatPrice } from '../utils';
 
-const RelatedProducts = ({ currentProductId }) => {
+const RelatedProducts = ({ currentProductId, category }) => {
     const [products, setProducts] = useState([]);
 
     useEffect(() => {
         const loadProducts = async () => {
-            // In a real app, verify by category. Here we fetch random/all and shuffle
-            const allProducts = await fetchProducts();
-            const filtered = allProducts
+            // Fetch by category if available, otherwise fallback to all
+            let results = [];
+            if (category) {
+                results = await fetchProductsByCategory(category.toLowerCase());
+            } else {
+                results = await fetchProducts();
+            }
+
+            const filtered = results
                 .filter(p => p.id !== currentProductId) // Exclude current
                 .sort(() => 0.5 - Math.random()) // Shuffle
                 .slice(0, 4); // Take 4
             setProducts(filtered);
         };
         loadProducts();
-    }, [currentProductId]);
+    }, [currentProductId, category]);
 
     return (
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 border-t border-gray-200 dark:border-gray-800">
             <div className="flex justify-between items-end mb-8">
                 <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">You Might Also Like</h2>
-                <NavLink to="/men" className="hidden sm:flex items-center gap-2 text-sm font-semibold text-indigo-600 hover:text-indigo-500 transition">
-                    View Match <FiArrowRight />
-                </NavLink>
+                {category && (
+                    <NavLink to={`/category/${category.toLowerCase()}`} className="hidden sm:flex items-center gap-2 text-sm font-semibold text-indigo-600 hover:text-indigo-500 transition">
+                        View More {category} <FiArrowRight />
+                    </NavLink>
+                )}
             </div>
 
             <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
