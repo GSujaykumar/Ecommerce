@@ -57,4 +57,10 @@ public class NotificationService {
             log.error("Failed to process notification message {}: {}", message, e.getMessage());
         }
     }
+
+    @org.springframework.amqp.rabbit.annotation.RabbitListener(queues = "notificationQueue")
+    public void handleRabbitNotification(String message) {
+        log.info("Received RabbitMQ Message: {}", message);
+        handleNotification(message); // Re-use the same processing logic
+    }
 }

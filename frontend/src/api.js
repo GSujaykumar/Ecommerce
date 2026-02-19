@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // DIRECT SERVICE URLS (Via Gateway)
 // DIRECT SERVICE URLS (Via Gateway)
-const GATEWAY_URL = 'http://localhost:8080';
+const GATEWAY_URL = 'http://127.0.0.1:8080';
 const USER_URL = GATEWAY_URL;
 const PRODUCT_URL = GATEWAY_URL;
 const ORDER_URL = GATEWAY_URL;

@@ -6,7 +6,7 @@ docker-compose up -d
 Write-Host "Waiting for Kafka & MySQL (20s)..."
 Start-Sleep -Seconds 20
 
-$root = "$PSScriptRoot\backend\ecommerce-backend"
+$root = "$PSScriptRoot\backend"
 
 function Start-Microservice {
     param([string]$Name)

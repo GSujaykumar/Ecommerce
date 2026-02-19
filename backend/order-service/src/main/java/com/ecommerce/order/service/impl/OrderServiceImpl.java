@@ -31,6 +31,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final org.springframework.web.reactive.function.client.WebClient.Builder webClientBuilder;
     private final KafkaTemplate<String, String> kafkaTemplate;
+    private final org.springframework.amqp.rabbit.core.RabbitTemplate rabbitTemplate;
     private final ObjectMapper objectMapper;
 
     @Override
@@ -103,10 +104,17 @@ public class OrderServiceImpl implements OrderService {
             try {
                 OrderPlacedEvent event = new OrderPlacedEvent(order.getOrderNumber(), orderRequest.email(), orderRequest.mobileNumber());
                 String jsonEvent = objectMapper.writeValueAsString(event);
+                
+                // Primary: Kafka
                 kafkaTemplate.send("notificationTopic", jsonEvent);
                 log.info("Sent OrderPlacedEvent to Kafka: {}", jsonEvent);
+
+                // Secondary/Alternative: RabbitMQ (for dual notification support as requested)
+                rabbitTemplate.convertAndSend("notificationQueue", jsonEvent);
+                log.info("Sent OrderPlacedEvent to RabbitMQ: {}", jsonEvent);
+                
             } catch (Exception e) {
-                log.error("Failed to send Kafka notification: {}", e.getMessage());
+                log.error("Failed to send notification: {}", e.getMessage());
             }
             
             return order.getOrderNumber();
