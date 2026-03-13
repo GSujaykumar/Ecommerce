@@ -21,8 +21,29 @@ public class SecurityConfig {
         serverHttpSecurity
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchange -> exchange
-                        .anyExchange().permitAll());
+                        .pathMatchers("/api/products/**").permitAll()
+                        .pathMatchers("/api/users/login", "/api/users/register").permitAll()
+                        .pathMatchers("/eureka/**").permitAll()
+                        .pathMatchers("/api/cart/**", "/api/orders/**", "/api/payment/**").authenticated()
+                        .anyExchange().permitAll()) // Allow others (like users sync) but protect core business
+                .oauth2ResourceServer(spec -> spec.jwt(org.springframework.security.config.Customizer.withDefaults()));
+        
         return serverHttpSecurity.build();
+    }
+
+    @Bean
+    public org.springframework.cloud.gateway.filter.GlobalFilter userContextFilter() {
+        return (exchange, chain) -> exchange.getPrincipal()
+                .filter(principal -> principal instanceof org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken)
+                .cast(org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken.class)
+                .map(org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken::getToken)
+                .map(org.springframework.security.oauth2.jwt.Jwt::getSubject)
+                .map(userId -> {
+                    exchange.getRequest().mutate().header("X-User-Id", userId).build();
+                    return exchange;
+                })
+                .defaultIfEmpty(exchange)
+                .flatMap(chain::filter);
     }
 
 //    @Bean

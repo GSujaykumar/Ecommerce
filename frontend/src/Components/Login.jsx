@@ -23,19 +23,25 @@ export default function Login() {
             // If provider is google/github, we just mock it for UI demo
             let userData, token;
 
+            if (provider === 'google') {
+                // REAL OAuth2 Integration with Keycloak Identity Providers
+                const clientId = 'ecommerce-frontend';
+                const redirectUri = encodeURIComponent(window.location.origin + '/login/callback');
+                window.location.href = `http://localhost:8181/realms/ecommerce-realm/protocol/openid-connect/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=openid%20email%20profile&kc_idp_hint=google`;
+                return;
+            }
+
             if (provider === 'email') {
                 // Pass email as username, and fullName from form
                 const response = await loginUser(formData.email, formData.password, formData.fullName);
                 userData = response.user;
                 token = response.token;
             } else {
-                // Mock Social
+                // Mock GitHub for Demo
                 userData = {
-                    name: provider === 'google' ? "Google User" : "GitHub Dev",
-                    email: provider === 'google' ? "user@gmail.com" : "dev@github.com",
-                    avatar: provider === 'google'
-                        ? "https://ui-avatars.com/api/?name=Google+User&background=DB4437&color=fff"
-                        : "https://ui-avatars.com/api/?name=GitHub+Dev&background=000&color=fff"
+                    name: "GitHub Dev",
+                    email: "dev@github.com",
+                    avatar: "https://ui-avatars.com/api/?name=GitHub+Dev&background=000&color=fff"
                 };
                 token = "mock-social-token";
             }

@@ -1,148 +1,435 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiX, FiSend, FiMessageSquare, FiLoader, FiInfo } from 'react-icons/fi';
+import {
+    FiX, FiSend, FiMessageSquare, FiShoppingBag, FiPackage,
+    FiRefreshCw, FiSearch, FiHelpCircle, FiChevronRight, FiStar,
+    FiTruck, FiTag, FiZap
+} from 'react-icons/fi';
+import { Link } from 'react-router-dom';
+import { ShopContext } from '../Context/ShopContext';
+import { getAllProducts, getMyOrders } from '../api';
+import { formatPrice } from '../utils';
 
+// ─── Smart Brain ─────────────────────────────────────────────────────────────
+const KB = {
+    greet: ["hi", "hello", "hey", "heyy", "sup", "wassup", "namaste", "yo"],
+    order: ["order", "delivery", "track", "tracking", "shipped", "dispatch", "when will", "my order"],
+    return: ["return", "refund", "exchange", "money back", "cancel", "replace"],
+    shipping: ["ship", "shipping", "delivery time", "how long", "days", "international", "express"],
+    payment: ["payment", "pay", "card", "upi", "cod", "cash", "stripe", "wallet"],
+    discount: ["discount", "coupon", "promo", "offer", "sale", "code", "off"],
+    size: ["size", "sizing", "fit", "measurement", "chart", "xs", "small", "medium", "large", "xl"],
+    product: ["product", "recommend", "suggest", "best", "popular", "new", "trending", "buy"],
+    help: ["help", "support", "contact", "talk", "human", "agent"],
+    bye: ["bye", "goodbye", "thanks", "thank you", "ok done", "great", "perfect"],
+};
+
+const matchKB = (msg) => {
+    const m = msg.toLowerCase();
+    for (const [key, terms] of Object.entries(KB)) {
+        if (terms.some(t => m.includes(t))) return key;
+    }
+    return null;
+};
+
+// ─── Response Engine ─────────────────────────────────────────────────────────
+const buildResponse = async (msg, orders, products, user) => {
+    const intent = matchKB(msg);
+    const m = msg.toLowerCase();
+
+    // 1. Order tracking with real data
+    if (intent === 'order') {
+        if (!user) {
+            return {
+                text: "Please **login** first to check your orders. Once logged in, I can show you real-time order status! 🔐",
+                quick: ["Go to Login →"]
+            };
+        }
+        if (orders.length === 0) {
+            return {
+                text: `Hi ${user.fullName || 'there'}! 📦 You don't have any orders yet. Start shopping and I'll help you track everything!`,
+                quick: ["Browse Products", "View Categories"]
+            };
+        }
+        const latest = orders[0];
+        return {
+            text: `📦 Your latest order **#${latest.orderNumber || latest.id}** is currently **${latest.status || 'Processing'}**.\n\nTotal: **${formatPrice ? formatPrice(latest.totalPrice || 0) : '₹' + (latest.totalPrice || 0)}**\n\nYou have **${orders.length} order(s)** in total.`,
+            quick: ["View All Orders", "Track Shipping", "Start New Order"],
+            link: { to: "/orders", label: "📋 View All Orders" }
+        };
+    }
+
+    // 2. High-Fidelity Spring AI Call (The "AI World" Brain)
+    // If it's a general question or product recommendation, use the AI Backend
+    if (intent === 'product' || intent === null || m.length > 20) {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/products/ai/chat?message=${encodeURIComponent(msg)}`);
+            const aiText = response.data;
+
+            // If AI mentions products, we find them in our local list to show cards
+            const suggestedProducts = products.filter(p =>
+                aiText.toLowerCase().includes(p.title.toLowerCase().split(' ')[0])
+            ).slice(0, 3);
+
+            return {
+                text: aiText,
+                quick: suggestedProducts.length > 0 ? ["Add to Cart", "View Details"] : ["Men's Fashion", "Electronics", "Deals"],
+                productCards: suggestedProducts
+            };
+        } catch (error) {
+            console.warn("AI Backend unreachable, falling back to local KB", error);
+            // Fallback to local KB below...
+        }
+    }
+
+    if (intent === 'greet') {
+        const name = user?.fullName?.split(' ')[0] || 'there';
+        return {
+            text: `Hey ${name}! 👋 I'm **ObitoBot**, your AI shopping assistant.\n\nI can help you with orders, product recommendations, returns, and much more. What's on your mind?`,
+            quick: ["Track My Order", "Get Recommendations", "Return Policy", "Shipping Info"]
+        };
+    }
+
+    if (intent === 'return') {
+        return {
+            text: "🔄 **Return Policy**\n\n✅ 30-day hassle-free returns\n✅ Free pickup from your doorstep\n✅ Refund in 5-7 business days\n\nTo start a return, just go to **My Orders** and click 'Return Item' on any eligible order.",
+            quick: ["View My Orders", "Contact Support", "Browse More"],
+            link: { to: "/orders", label: "🛍️ Go to My Orders" }
+        };
+    }
+
+    if (intent === 'shipping') {
+        return {
+            text: "🚚 **Shipping Info**\n\n📦 Standard: 3-5 business days\n⚡ Express: 1-2 business days\n🌍 International: 7-14 business days\n\n**Free shipping** on orders above ₹999!",
+            quick: ["Check My Order", "Express Delivery?", "International Shipping"]
+        };
+    }
+
+    if (intent === 'payment') {
+        return {
+            text: "💳 **Payment Options**\n\nWe accept:\n✅ Credit/Debit Cards\n✅ UPI (GPay, PhonePe, Paytm)\n✅ Cash on Delivery\n✅ Net Banking\n✅ Wallets\n\nAll payments are 100% secure and encrypted via Stripe.",
+            quick: ["Place an Order", "Any Offers?", "Help with Payment"]
+        };
+    }
+
+    if (intent === 'discount') {
+        return {
+            text: "🎉 **Current Offers**\n\n🔖 **WELCOME10** – 10% off your first order!\n🔖 **SAVE20** – 20% off orders above ₹2000\n🔖 Free shipping on orders above ₹999\n\nCheck our **Flash Sale** section for limited-time deals!",
+            quick: ["Shop Now", "Flash Sale", "Track Order"]
+        };
+    }
+
+    if (intent === 'size') {
+        return {
+            text: "📏 **Size Guide**\n\nFor most clothing items:\n- **S** → Chest 36\"\n- **M** → Chest 38-40\"\n- **L** → Chest 42-44\"\n- **XL** → Chest 46\"\n\nWhen in doubt, size up for a relaxed fit! 😊",
+            quick: ["Browse Men's", "Browse Women's", "Contact Support"]
+        };
+    }
+
+    if (intent === 'bye') {
+        return {
+            text: "Thanks for chatting! 🙏 Happy shopping at **ObitoStore**! If you need anything, I'm always here. Have a great day! ✨",
+            quick: ["Back to Shopping", "View My Cart"]
+        };
+    }
+
+    return {
+        text: "Hmm, I'm still learning! 🤔 But I can definitely help with:\n\n• 📦 Order tracking\n• 🔄 Returns & refunds\n• 🛍️ Product recommendations\n• 💳 Payment & shipping info\n\nWhat would you like to know?",
+        quick: ["Track My Order", "Product Recommendations", "Return Policy", "Shipping Info"]
+    };
+};
+
+// ─── Product Card in Chat ─────────────────────────────────────────────────────
+const ChatProductCard = ({ product }) => (
+    <Link to={`/product/${product.id}`} className="block">
+        <div className="flex items-center gap-2 bg-white dark:bg-gray-800 rounded-xl p-2 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition border border-gray-100 dark:border-gray-700 group">
+            <img src={product.image} alt={product.title} className="w-10 h-10 rounded-lg object-cover flex-shrink-0" />
+            <div className="flex-1 min-w-0">
+                <p className="text-xs font-semibold text-gray-800 dark:text-white truncate group-hover:text-indigo-600 transition">{product.title}</p>
+                <p className="text-xs text-indigo-600 font-bold">{formatPrice ? formatPrice(product.price) : '₹' + product.price}</p>
+            </div>
+            <FiChevronRight className="text-gray-400 flex-shrink-0" size={12} />
+        </div>
+    </Link>
+);
+
+// ─── Bot Avatar ───────────────────────────────────────────────────────────────
+const BotAvatar = () => (
+    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center text-white flex-shrink-0 shadow-md">
+        <FiZap size={12} />
+    </div>
+);
+
+// ─── Message Bubble ───────────────────────────────────────────────────────────
+const MessageBubble = ({ msg, onQuick }) => {
+    const formatText = (text) => {
+        return text
+            .split('\n')
+            .map((line, i) => (
+                <span key={i}>
+                    {line.split(/\*\*(.*?)\*\*/g).map((part, j) =>
+                        j % 2 === 1 ? <strong key={j}>{part}</strong> : part
+                    )}
+                    {i < text.split('\n').length - 1 && <br />}
+                </span>
+            ));
+    };
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={`flex gap-2 ${msg.isBot ? 'justify-start' : 'justify-end'}`}
+        >
+            {msg.isBot && <BotAvatar />}
+            <div className="flex flex-col gap-2 max-w-[82%]">
+                {/* Text bubble */}
+                <div className={`rounded-2xl px-4 py-3 text-sm leading-relaxed ${msg.isBot
+                    ? 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 shadow-sm rounded-tl-sm border border-gray-100 dark:border-gray-700'
+                    : 'bg-gradient-to-br from-indigo-600 to-violet-600 text-white rounded-tr-sm shadow-md'
+                    }`}>
+                    {formatText(msg.text)}
+                </div>
+
+                {/* Product cards */}
+                {msg.isBot && msg.productCards?.length > 0 && (
+                    <div className="flex flex-col gap-1.5">
+                        {msg.productCards.map(p => <ChatProductCard key={p.id} product={p} />)}
+                    </div>
+                )}
+
+                {/* CTA link */}
+                {msg.isBot && msg.link && (
+                    <Link
+                        to={msg.link.to}
+                        className="self-start text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-full hover:bg-indigo-700 transition font-medium flex items-center gap-1"
+                    >
+                        {msg.link.label} <FiChevronRight size={12} />
+                    </Link>
+                )}
+
+                {/* Quick replies */}
+                {msg.isBot && msg.quick?.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5">
+                        {msg.quick.map((opt, i) => (
+                            <button
+                                key={i}
+                                onClick={() => onQuick(opt)}
+                                className="text-xs bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 px-3 py-1.5 rounded-full hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition font-medium"
+                            >
+                                {opt}
+                            </button>
+                        ))}
+                    </div>
+                )}
+            </div>
+        </motion.div>
+    );
+};
+
+// ─── Typing Indicator ─────────────────────────────────────────────────────────
+const TypingIndicator = () => (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-2 justify-start">
+        <BotAvatar />
+        <div className="bg-white dark:bg-gray-800 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm border border-gray-100 dark:border-gray-700">
+            <div className="flex gap-1 items-center h-4">
+                {[0, 0.2, 0.4].map((d, i) => (
+                    <span key={i} className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style={{ animationDelay: `${d}s` }} />
+                ))}
+            </div>
+        </div>
+    </motion.div>
+);
+
+// ─── Main Chatbot ─────────────────────────────────────────────────────────────
 const Chatbot = () => {
+    const { user } = useContext(ShopContext);
     const [isOpen, setIsOpen] = useState(false);
-    const [messages, setMessages] = useState([
-        { id: 1, text: "Hi there! I'm ObitoBot 🤖. How can I help you today?", isBot: true },
-    ]);
+    const [messages, setMessages] = useState([]);
     const [typing, setTyping] = useState(false);
-    const [input, setInput] = useState("");
+    const [input, setInput] = useState('');
+    const [orders, setOrders] = useState([]);
+    const [products, setProducts] = useState([]);
+    const [unreadCount, setUnreadCount] = useState(1);
+    const endRef = useRef(null);
 
-    const predefinedOptions = [
-        "Where is my order?",
-        "Do you ship internationally?",
-        "What is your return policy?",
-        "Just browsing!"
-    ];
+    // Initial greeting
+    useEffect(() => {
+        const name = user?.fullName?.split(' ')[0] || 'there';
+        setMessages([{
+            id: 1,
+            text: `Hey ${name}! 👋 I'm **ObitoBot**, your personal AI shopping assistant.\n\nI have access to your real orders and live product catalog. Ask me anything!`,
+            isBot: true,
+            quick: ["Track My Order 📦", "Recommendations 🔥", "Return Policy 🔄", "Flash Deals 🎉"],
+        }]);
+    }, [user]);
 
-    const handleSend = (text) => {
-        const userMsg = text || input;
-        if (!userMsg.trim()) return;
+    // Fetch context data on open
+    useEffect(() => {
+        if (isOpen) {
+            setUnreadCount(0);
+            getAllProducts().then(p => setProducts(p || [])).catch(() => { });
+            if (user) getMyOrders().then(o => setOrders(o || [])).catch(() => { });
+        }
+    }, [isOpen, user]);
 
-        // User Message
-        setMessages(prev => [...prev, { id: Date.now(), text: userMsg, isBot: false }]);
-        setInput("");
+    // Auto-scroll
+    useEffect(() => {
+        endRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [messages, typing]);
+
+    const sendMessage = async (text) => {
+        const msg = (text || input).trim();
+        if (!msg) return;
+
+        setInput('');
+        const userMsg = { id: Date.now(), text: msg, isBot: false };
+        setMessages(prev => [...prev, userMsg]);
         setTyping(true);
 
-        // Advanced AI Logic Simulation
-        setTimeout(() => {
-            let botResponse = "I'm not sure about that. Try asking about orders, shipping, or returns.";
-            const lowerMsg = userMsg.toLowerCase();
+        // Simulate network latency for premium feel
+        const delay = 600 + Math.random() * 600;
+        await new Promise(r => setTimeout(r, delay));
 
-            if (lowerMsg.includes("order") && (lowerMsg.includes("where") || lowerMsg.includes("track") || lowerMsg.includes("status"))) {
-                botResponse = "To track your order, please enter your Order ID (e.g., ORD-7782-XJ). You can also find this in your 'Orders' page.";
-            } else if (lowerMsg.includes("ord-")) {
-                botResponse = `Checking status for ${userMsg}... 🔍\n\nResult: 🚚 In Transit\nEst. Delivery: Tomorrow by 8 PM.`;
-            } else if (lowerMsg.includes("ship") || lowerMsg.includes("international")) {
-                botResponse = "We ship globally! 🌍 Free shipping on orders over $150. Standard delivery takes 3-5 business days.";
-            } else if (lowerMsg.includes("return") || lowerMsg.includes("refund")) {
-                botResponse = "Returns are hassle-free! You have 30 days to return items. Visit our 'Returns Center' to generate a label.";
-            } else if (lowerMsg.includes("hello") || lowerMsg.includes("hi")) {
-                botResponse = "Hello! 👋 I'm ObitoBot. Looking for some fresh gear today?";
-            } else if (lowerMsg.includes("recommend") || lowerMsg.includes("suggestion")) {
-                botResponse = "Our 'Urban Tech Hoodie' is trending right now! 🔥 Check out the 'New Arrivals' section.";
-            } else if (lowerMsg.includes("store")) {
-                botResponse = "We have flagship stores in Tokyo, NYC, and London. Check the 'About Us' page for our map!";
-            }
+        const response = await buildResponse(msg, orders, products, user);
+        const botMsg = { id: Date.now() + 1, isBot: true, ...response };
+        setMessages(prev => [...prev, botMsg]);
+        setTyping(false);
+    };
 
-            setMessages(prev => [...prev, { id: Date.now() + 1, text: botResponse, isBot: true }]);
-            setTyping(false);
-        }, 1200);
+    const clearChat = () => {
+        const name = user?.fullName?.split(' ')[0] || 'there';
+        setMessages([{
+            id: Date.now(),
+            text: `Chat cleared! How can I help you, ${name}? 😊`,
+            isBot: true,
+            quick: ["Track My Order 📦", "Get Recommendations 🔥", "Return Policy 🔄"],
+        }]);
     };
 
     return (
         <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end pointer-events-none">
 
+            {/* Chat Panel */}
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                        initial={{ opacity: 0, scale: 0.92, y: 16 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        className="bg-white dark:bg-gray-900 w-80 sm:w-96 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 pointer-events-auto overflow-hidden mb-4 flex flex-col h-[500px]"
+                        exit={{ opacity: 0, scale: 0.92, y: 16 }}
+                        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                        className="mb-4 w-[350px] sm:w-[390px] pointer-events-auto rounded-2xl shadow-2xl overflow-hidden flex flex-col border border-gray-200 dark:border-gray-800"
+                        style={{ height: '560px' }}
                     >
-                        {/* Header */}
-                        <div className="bg-black dark:bg-gray-800 p-4 flex justify-between items-center">
+                        {/* ── Header ── */}
+                        <div className="flex-shrink-0 bg-gradient-to-r from-indigo-700 via-indigo-600 to-violet-600 px-4 py-3 flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center text-white">
-                                    <FiMessageSquare size={16} />
+                                <div className="relative">
+                                    <div className="w-9 h-9 rounded-full bg-white/20 backdrop-blur flex items-center justify-center text-white border border-white/30">
+                                        <FiZap size={16} />
+                                    </div>
+                                    <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-400 rounded-full border-2 border-indigo-600 animate-pulse" />
                                 </div>
                                 <div>
-                                    <h4 className="text-white font-bold text-sm">Obito Assistant</h4>
-                                    <span className="flex items-center gap-1 text-[10px] text-green-400">
-                                        <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> Online
-                                    </span>
+                                    <h4 className="text-white font-bold text-sm tracking-wide">ObitoBot AI</h4>
+                                    <p className="text-white/70 text-[10px]">Always Online • Powered by Intelligence</p>
                                 </div>
                             </div>
-                            <button onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-white transition">
-                                <FiX size={20} />
-                            </button>
+                            <div className="flex items-center gap-2">
+                                <button onClick={clearChat} title="Clear chat" className="text-white/60 hover:text-white transition p-1.5 rounded-lg hover:bg-white/10">
+                                    <FiRefreshCw size={14} />
+                                </button>
+                                <button onClick={() => setIsOpen(false)} className="text-white/60 hover:text-white transition p-1.5 rounded-lg hover:bg-white/10">
+                                    <FiX size={16} />
+                                </button>
+                            </div>
                         </div>
 
-                        {/* Messages */}
-                        <div className="flex-1 p-4 overflow-y-auto bg-gray-50 dark:bg-[#0b0f19] space-y-4 scrollbar-thin">
-                            {messages.map((msg) => (
-                                <div key={msg.id} className={`flex ${msg.isBot ? 'justify-start' : 'justify-end'}`}>
-                                    <div className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm ${msg.isBot ? 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 shadow-sm rounded-tl-sm' : 'bg-indigo-600 text-white rounded-tr-sm'}`}>
-                                        {msg.text}
-                                    </div>
-                                </div>
+                        {/* ── Context Pills ── */}
+                        {user && (
+                            <div className="flex-shrink-0 bg-indigo-50 dark:bg-indigo-900/20 px-3 py-1.5 flex items-center gap-3 border-b border-indigo-100 dark:border-indigo-900/50">
+                                <span className="flex items-center gap-1 text-[10px] text-indigo-600 dark:text-indigo-400 font-semibold">
+                                    <FiPackage size={10} /> {orders.length} Orders
+                                </span>
+                                <span className="flex items-center gap-1 text-[10px] text-indigo-600 dark:text-indigo-400 font-semibold">
+                                    <FiShoppingBag size={10} /> {products.length} Products
+                                </span>
+                                <span className="flex items-center gap-1 text-[10px] text-green-600 font-semibold ml-auto">
+                                    <span className="w-1.5 h-1.5 bg-green-500 rounded-full" /> Context Loaded
+                                </span>
+                            </div>
+                        )}
+
+                        {/* ── Messages ── */}
+                        <div className="flex-1 overflow-y-auto p-4 bg-gray-50 dark:bg-[#0b0f19] space-y-3">
+                            {messages.map(msg => (
+                                <MessageBubble key={msg.id} msg={msg} onQuick={sendMessage} />
                             ))}
-                            {typing && (
-                                <div className="flex justify-start">
-                                    <div className="bg-white dark:bg-gray-800 rounded-2xl px-4 py-3 shadow-sm rounded-tl-sm text-gray-500">
-                                        <div className="flex gap-1">
-                                            <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0s' }}></span>
-                                            <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></span>
-                                            <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
+                            {typing && <TypingIndicator />}
+                            <div ref={endRef} />
                         </div>
 
-                        {/* Input Area */}
-                        <div className="p-4 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800">
-                            {/* Quick Options */}
-                            <div className="flex gap-2 overflow-x-auto pb-3 mb-2 scrollbar-none">
-                                {predefinedOptions.map((opt, i) => (
-                                    <button
-                                        key={i}
-                                        onClick={() => handleSend(opt)}
-                                        className="whitespace-nowrap px-3 py-1.5 bg-gray-100 dark:bg-gray-800 text-xs font-medium text-gray-600 dark:text-gray-300 rounded-full hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition border border-gray-200 dark:border-gray-700"
-                                    >
-                                        {opt}
-                                    </button>
-                                ))}
-                            </div>
-
+                        {/* ── Input ── */}
+                        <div className="flex-shrink-0 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 p-3">
                             <form
-                                onSubmit={(e) => { e.preventDefault(); handleSend(); }}
-                                className="flex gap-2"
+                                onSubmit={(e) => { e.preventDefault(); sendMessage(); }}
+                                className="flex gap-2 items-center"
                             >
                                 <input
                                     type="text"
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
-                                    placeholder="Type a message..."
-                                    className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white"
+                                    placeholder="Ask me anything..."
+                                    className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white dark:placeholder-gray-500 transition"
                                 />
-                                <button type="submit" className="bg-black dark:bg-white text-white dark:text-black p-3 rounded-xl hover:opacity-90 transition">
-                                    <FiSend />
+                                <button
+                                    type="submit"
+                                    disabled={!input.trim()}
+                                    className="bg-gradient-to-br from-indigo-600 to-violet-600 text-white p-3 rounded-xl hover:opacity-90 transition active:scale-95 disabled:opacity-40 shadow-md"
+                                >
+                                    <FiSend size={15} />
                                 </button>
                             </form>
+                            <p className="text-center text-[10px] text-gray-400 dark:text-gray-600 mt-2">
+                                ObitoBot is AI-powered — not always perfect, but always helpful ✨
+                            </p>
                         </div>
                     </motion.div>
                 )}
             </AnimatePresence>
 
+            {/* ── FAB Button ── */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className={`bg-black dark:bg-white text-white dark:text-black p-4 rounded-full shadow-2xl hover:scale-110 transition active:scale-95 pointer-events-auto border-2 border-transparent ${isOpen ? 'rotate-90' : ''}`}
+                className="relative pointer-events-auto w-14 h-14 bg-gradient-to-br from-indigo-600 to-violet-600 text-white rounded-full shadow-2xl hover:shadow-indigo-500/30 hover:scale-110 active:scale-95 transition-all duration-200 flex items-center justify-center"
             >
-                {isOpen ? <FiX size={24} /> : <FiMessageSquare size={24} />}
+                <AnimatePresence mode="wait">
+                    {isOpen ? (
+                        <motion.span key="x" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }}>
+                            <FiX size={22} />
+                        </motion.span>
+                    ) : (
+                        <motion.span key="msg" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }}>
+                            <FiZap size={22} />
+                        </motion.span>
+                    )}
+                </AnimatePresence>
+
+                {/* Unread Badge */}
+                {!isOpen && unreadCount > 0 && (
+                    <motion.span
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow"
+                    >
+                        {unreadCount}
+                    </motion.span>
+                )}
+
+                {/* Ping ring */}
+                {!isOpen && (
+                    <span className="absolute inset-0 rounded-full bg-indigo-500 animate-ping opacity-20" />
+                )}
             </button>
         </div>
     );

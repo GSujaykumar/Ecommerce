@@ -39,7 +39,11 @@ public class UserServiceImpl implements UserService {
             user = new User();
             user.setKeycloakId(keycloakId);
             user.setEmail(userRequest.email());
-            user.setPassword(passwordEncoder.encode(userRequest.password()));
+            if (userRequest.password() != null && !userRequest.password().isEmpty()) {
+                user.setPassword(passwordEncoder.encode(userRequest.password()));
+            } else {
+                user.setPassword("EXTERNAL_AUTH"); // Placeholder
+            }
             user.setFullName(userRequest.fullName());
             user.setAddress(userRequest.address());
         }

@@ -53,21 +53,18 @@ public class UserController {
         return userService.syncUser(keycloakId, securedRequest);
     }
     @PostMapping("/login")
-    public UserResponse login(@RequestBody UserRequest userRequest) {
-        try {
-            return userService.login(userRequest);
-        } catch (Exception e) {
-            // Auto-register if not found (Simplified Flow)
-            String fakeId = java.util.UUID.randomUUID().toString();
-            
-            // Ensure we don't save empty names if auto-registering via Login
-            String name = (userRequest.fullName() == null || userRequest.fullName().trim().isEmpty()) 
-                          ? "New User" 
-                          : userRequest.fullName();
-                          
-            UserRequest registrationRequest = new UserRequest(userRequest.email(), userRequest.password(), name, userRequest.address());
-            return userService.syncUser(fakeId, registrationRequest);
-        }
+    public UserResponse login(@RequestHeader(value = "X-User-Id", required = false) String userId, @RequestBody UserRequest userRequest) {
+        String keycloakId = (userId != null && !userId.isEmpty()) ? userId : java.util.UUID.randomUUID().toString();
+        
+        // Use the email from request or previous record
+        UserRequest syncRequest = new UserRequest(
+            userRequest.email(), 
+            null, // No need to store sensitive passwords in local DB when using Keycloak
+            userRequest.fullName() != null ? userRequest.fullName() : "User",
+            userRequest.address()
+        );
+        
+        return userService.syncUser(keycloakId, syncRequest);
     }
 
     @PostMapping("/register")

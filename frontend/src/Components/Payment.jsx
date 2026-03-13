@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { makePaymentApi, placeOrder } from '../api';
+import { placeOrder, getPaymentByOrderId } from '../api';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { ShopContext } from '../Context/ShopContext';
@@ -19,6 +19,7 @@ const CheckoutForm = () => {
     const [success, setSuccess] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState('card');
     const [lastOrder, setLastOrder] = useState(null);
+    const [paymentInfo, setPaymentInfo] = useState(null);
 
     // Mock Shipping State
     const [shipping, setShipping] = useState({
@@ -59,20 +60,47 @@ const CheckoutForm = () => {
 
             if (paymentMethod === 'card') {
                 const cardElement = elements.getElement(CardElement);
-                const { error, paymentMethod: pm } = await stripe.createPaymentMethod({
-                    type: 'card',
-                    card: cardElement,
-                    billing_details: {
-                        name: shipping.name,
-                        email: shipping.email,
+
+                // 1. Ask backend to create a real Stripe PaymentIntent
+                const token = localStorage.getItem('token');
+                const intentResponse = await fetch('http://localhost:8080/api/payment/stripe/create-intent', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
                     },
+                    body: JSON.stringify({
+                        amount: Math.round(total), // Send as raw unit
+                        currency: 'inr',
+                        orderId: `TEMP-${Date.now()}`,
+                        userEmail: shipping.email
+                    })
                 });
-                if (error) {
-                    setError(error.message);
+
+                if (!intentResponse.ok) {
+                    throw new Error("Failed to initialize payment gateway.");
+                }
+
+                const intentData = await intentResponse.json();
+
+                // 2. Confirm the card payment securely with Stripe
+                const { error: stripeError, paymentIntent } = await stripe.confirmCardPayment(intentData.clientSecret, {
+                    payment_method: {
+                        card: cardElement,
+                        billing_details: {
+                            name: shipping.name,
+                            email: shipping.email,
+                        },
+                    }
+                });
+
+                if (stripeError) {
+                    setError(stripeError.message);
                     setLoading(false);
                     return;
                 }
-                paymentResult = pm;
+
+                paymentResult = paymentIntent;
             } else {
                 // Success for UPI / COD
                 paymentResult = { id: `MOCK-${paymentMethod.toUpperCase()}-123` };
@@ -101,6 +129,7 @@ const CheckoutForm = () => {
             setLastOrder(newOrder);
             setSuccess(true);
             clearCart();
+            setPaymentInfo(await getPaymentByOrderId(orderNumber));
         } catch (err) {
             console.error('Payment Flow Error:', err);
             setError(err.message || 'An error occurred during order processing.');
@@ -150,15 +179,33 @@ const CheckoutForm = () => {
 
     if (success) {
         return (
-            <div className="flex flex-col items-center justify-center py-24 px-4 text-center">
+            <div className="flex flex-col items-center justify-center py-24 px-4 text-center max-w-2xl mx-auto">
                 <div className="bg-green-100 dark:bg-green-900/30 p-6 rounded-full mb-6 animate-bounce">
                     <FiCheckCircle className="text-5xl text-green-600 dark:text-green-400" />
                 </div>
                 <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Payment Successful!</h2>
-                <p className="text-lg text-gray-600 dark:text-gray-300 mb-8 max-w-lg">
-                    Thank you for your order, {shipping.name}. A confirmation email has been sent to {shipping.email}.
+                <p className="text-lg text-gray-600 dark:text-gray-300 mb-4">
+                    Thank you for your order, {shipping.name}.
                 </p>
-                <div className="flex gap-4 mt-6">
+                <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-8 text-left w-full space-y-3">
+                    <p className="flex items-center gap-2 text-green-600 dark:text-green-400 font-medium">
+                        <FiCheckCircle /> Transaction saved
+                    </p>
+                    {paymentInfo?.transactionId && (
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                            Transaction ID: <span className="font-mono font-medium">{paymentInfo.transactionId}</span>
+                        </p>
+                    )}
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                        Confirmation email with <strong>invoice PDF</strong> sent to <strong>{shipping.email}</strong>.
+                    </p>
+                    {shipping.mobile && (
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                            Notification sent to <strong>{shipping.mobile}</strong>.
+                        </p>
+                    )}
+                </div>
+                <div className="flex flex-wrap gap-4 justify-center">
                     <button onClick={() => navigate('/order-history')} className="btn-primary">
                         View My Order
                     </button>

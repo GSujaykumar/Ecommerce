@@ -1,23 +1,20 @@
-package com.ecommerce.product.controller;
-
-import com.ecommerce.product.dto.ProductRequest;
-import com.ecommerce.product.dto.ProductResponse;
+import com.ecommerce.product.service.FileStorageService;
 import com.ecommerce.product.service.ProductService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
+@RequiredArgsConstructor
 public class ProductController {
 
     private final ProductService productService;
-
-    public ProductController(ProductService productService) {
-        this.productService = productService;
-    }
+    private final FileStorageService fileStorageService;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -25,6 +22,12 @@ public class ProductController {
             @RequestParam(value = "category", required = false) String category,
             @RequestParam(value = "subCategory", required = false) String subCategory) {
         return productService.getAllProducts(category, subCategory);
+    }
+
+    @GetMapping("/search")
+    @ResponseStatus(HttpStatus.OK)
+    public List<ProductResponse> searchProducts(@RequestParam("q") String query) {
+        return productService.searchProducts(query);
     }
 
     @GetMapping("/categories")
@@ -35,14 +38,20 @@ public class ProductController {
 
     @GetMapping("/sub-categories/{category}")
     @ResponseStatus(HttpStatus.OK)
-    public List<String> getSubCategories(@PathVariable String category) {
+    public List<String> getSubCategories(@PathVariable("category") String category) {
         return productService.getSubCategoriesByCategory(category);
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ProductResponse getProductById(@PathVariable Long id) {
+    public ProductResponse getProductById(@PathVariable("id") Long id) {
         return productService.getProductById(id);
+    }
+
+    @GetMapping("/{id}/social-proof")
+    @ResponseStatus(HttpStatus.OK)
+    public com.ecommerce.product.dto.SocialProofResponse getSocialProof(@PathVariable("id") Long id) {
+        return productService.getSocialProof(id);
     }
 
     @PostMapping
@@ -55,7 +64,14 @@ public class ProductController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
-    public void deleteProduct(@PathVariable Long id) {
+    public void deleteProduct(@PathVariable("id") Long id) {
         productService.deleteProduct(id);
+    }
+
+    @PostMapping("/upload")
+    @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+    public String uploadImage(@RequestParam("file") MultipartFile file) {
+        return fileStorageService.uploadFile(file);
     }
 }

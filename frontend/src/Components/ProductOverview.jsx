@@ -122,20 +122,23 @@ export default function ProductOverview() {
   const displayProduct = {
     ...product,
     price: product.price || 0,
-    images: [{ src: product.image, alt: product.title }, { src: product.image, alt: product.title }, { src: product.image, alt: product.title }, { src: product.image, alt: product.title }], // Mock gallery
+    images: product.image ? [
+      { src: product.image, alt: product.title },
+      { src: product.image, alt: product.title },
+      { src: product.image, alt: product.title },
+    ] : [],
     colors: [
       { name: 'black', class: 'bg-black', selectedClass: 'ring-gray-900' },
+      { name: 'navy', class: 'bg-navy-900', selectedClass: 'ring-blue-900' },
       { name: 'white', class: 'bg-white', selectedClass: 'ring-gray-400' },
-      { name: 'blue', class: 'bg-blue-500', selectedClass: 'ring-blue-500' },
     ],
     sizes: [
-      { name: 'XS', inStock: true },
       { name: 'S', inStock: true },
       { name: 'M', inStock: true },
       { name: 'L', inStock: true },
       { name: 'XL', inStock: true },
     ],
-    description: product.description || "The Basic Tee 6-Pack allows you to fully express your vibrant personality with three grayscale options.",
+    description: product.description || "Premium quality product crafted with attention to detail and high-grade materials.",
   };
 
   const reviewCount = 117 + userReviews.length;

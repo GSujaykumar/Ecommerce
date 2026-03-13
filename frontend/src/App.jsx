@@ -10,6 +10,7 @@ import ScrollToTop from './Components/ScrollToTop'
 import { Outlet } from 'react-router-dom'
 import { ToastProvider } from './Context/ToastContext'
 import { QuickViewProvider } from './Context/QuickViewContext'
+import WebSocketNotification from './Components/WebSocketNotification'
 
 
 
@@ -19,7 +20,9 @@ function App() {
     <ToastProvider>
       <QuickViewProvider>
         <ScrollToTop />
+        <WebSocketNotification />
         <Header />
+        <div className="h-16" aria-hidden="true" />
         <NewsletterPopup />
         <Chatbot />
         <QuickViewModal />

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -16,22 +17,23 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
 
-    public boolean processPayment(String orderId, BigDecimal amount, String userId) {
+    public record PaymentResult(boolean success, String message, Long transactionId, String orderId) {}
+
+    public PaymentResult processPayment(String orderId, BigDecimal amount, String userId) {
         log.info("Processing payment for Order: {} by User: {}", orderId, userId);
-        
-        // Mock Payment Logic
-        // Reject if amount > 10000
-        if (amount.compareTo(new BigDecimal(10000)) > 0) {
+
+        if (amount.compareTo(new BigDecimal(100000)) > 0) {
             log.error("Payment FAILED for Order: {}", orderId);
-            savePayment(orderId, amount, "FAILED", userId);
-            return false;
+            Payment p = savePayment(orderId, amount, "FAILED", userId);
+            return new PaymentResult(false, "Payment Failed", p.getId(), orderId);
         }
 
-        savePayment(orderId, amount, "SUCCESS", userId);
-        return true;
+        Payment p = savePayment(orderId, amount, "SUCCESS", userId);
+        log.info("Transaction saved: id={}, orderId={}, amount={}", p.getId(), orderId, amount);
+        return new PaymentResult(true, "Payment Successful", p.getId(), orderId);
     }
 
-    private void savePayment(String orderId, BigDecimal amount, String status, String userId) {
+    private Payment savePayment(String orderId, BigDecimal amount, String status, String userId) {
         Payment payment = Payment.builder()
                 .userId(userId)
                 .orderId(orderId)
@@ -39,6 +41,10 @@ public class PaymentService {
                 .paymentStatus(status)
                 .timestamp(LocalDateTime.now())
                 .build();
-        paymentRepository.save(payment);
+        return paymentRepository.save(payment);
+    }
+
+    public Optional<Payment> findByOrderId(String orderId) {
+        return paymentRepository.findFirstByOrderIdOrderByTimestampDesc(orderId);
     }
 }

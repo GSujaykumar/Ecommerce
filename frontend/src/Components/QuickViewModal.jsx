@@ -1,13 +1,34 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { useQuickView } from '../Context/QuickViewContext';
 import { ShopContext } from '../Context/ShopContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiX, FiCheck, FiShoppingCart, FiStar } from 'react-icons/fi';
+import { FiX, FiCheck, FiShoppingCart, FiStar, FiEye, FiZap, FiActivity } from 'react-icons/fi';
 import { formatPrice } from '../utils';
 
 const QuickViewModal = () => {
     const { selectedProduct, closeQuickView } = useQuickView();
     const { addToCart } = useContext(ShopContext);
+    const [socialProof, setSocialProof] = useState(null);
+
+    useEffect(() => {
+        if (!selectedProduct?.id) return;
+        let isMounted = true;
+
+        const fetchSocialProof = async () => {
+            try {
+                const res = await fetch(`http://localhost:8080/api/products/${selectedProduct.id}/social-proof`);
+                if (res.ok && isMounted) setSocialProof(await res.json());
+            } catch (err) { }
+        };
+
+        fetchSocialProof();
+        const interval = setInterval(fetchSocialProof, 5000); // Poll every 5s for hyper-activity feel
+
+        return () => {
+            isMounted = false;
+            clearInterval(interval);
+        };
+    }, [selectedProduct?.id]);
 
     if (!selectedProduct) return null;
 
@@ -49,10 +70,21 @@ const QuickViewModal = () => {
 
                     {/* Details Side */}
                     <div className="p-10 flex flex-col justify-center">
-                        <div className="mb-2">
+                        <div className="mb-2 flex items-center justify-between">
                             <span className="text-indigo-600 font-bold text-xs uppercase tracking-wide bg-indigo-50 dark:bg-indigo-900/20 px-3 py-1 rounded-full">
                                 {selectedProduct.category}
                             </span>
+
+                            {/* LIVE WIDGET */}
+                            {socialProof && (
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}
+                                    className="flex items-center gap-1.5 text-xs font-semibold text-red-500 bg-red-50 dark:bg-red-900/20 px-3 py-1 rounded-full border border-red-100 dark:border-red-900/50"
+                                >
+                                    <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></div>
+                                    <FiEye size={12} /> {socialProof.activeViewers} viewing right now
+                                </motion.div>
+                            )}
                         </div>
                         <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4 leading-tight">
                             {selectedProduct.title}
@@ -66,9 +98,27 @@ const QuickViewModal = () => {
                             <span className="text-sm text-gray-500 font-medium">(128 Reviews)</span>
                         </div>
 
-                        <p className="text-gray-600 dark:text-gray-300 mb-8 leading-relaxed line-clamp-3">
+                        <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed line-clamp-3">
                             {selectedProduct.description}
                         </p>
+
+                        {/* HIGH CONVERSION FOMO BADGES */}
+                        {socialProof && (
+                            <div className="flex flex-col gap-2 mb-6">
+                                <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 font-medium">
+                                    <div className="p-1.5 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-500 rounded-md">
+                                        <FiZap size={14} />
+                                    </div>
+                                    <span>High Demand: <span className="text-gray-500 dark:text-gray-400 font-normal">Purchased {socialProof.recentPurchaseText}</span></span>
+                                </div>
+                                <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 font-medium">
+                                    <div className="p-1.5 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-500 rounded-md">
+                                        <FiActivity size={14} />
+                                    </div>
+                                    <span>Hurry! <span className="text-orange-600 dark:text-orange-400 font-bold">Only {socialProof.stockLeft} left</span> in stock.</span>
+                                </div>
+                            </div>
+                        )}
 
                         <div className="mt-auto">
                             <div className="flex items-end gap-4 mb-8">

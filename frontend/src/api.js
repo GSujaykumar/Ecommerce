@@ -1,14 +1,50 @@
 import axios from 'axios';
 
-// DIRECT SERVICE URLS (Via Gateway)
-// DIRECT SERVICE URLS (Via Gateway)
-const GATEWAY_URL = 'http://127.0.0.1:8080';
+// GATEWAY URL (Routes to all microservices)
+const GATEWAY_URL = 'http://localhost:8080';
+
+// API endpoints handled via Gateway routes
 const USER_URL = GATEWAY_URL;
 const PRODUCT_URL = GATEWAY_URL;
 const ORDER_URL = GATEWAY_URL;
 const CART_URL = GATEWAY_URL;
 const PAYMENT_URL = GATEWAY_URL;
 const NOTIFICATION_URL = GATEWAY_URL;
+const GRAPHQL_URL = `${GATEWAY_URL}/graphql`;
+
+// GraphQL Queries
+const PRODUCT_DETAILS_QUERY = `
+  query GetProductDetails($id: ID!) {
+    productDetails(id: $id) {
+      id
+      name
+      description
+      price
+      category
+      imageUrl
+      stockStatus
+      activeViewers
+    }
+  }
+`;
+
+export const fetchProductDetailsGraphQL = async (id) => {
+    try {
+        const response = await axios.post(GRAPHQL_URL, {
+            query: PRODUCT_DETAILS_QUERY,
+            variables: { id }
+        });
+        const data = response.data.data.productDetails;
+        return {
+            ...mapBackendProductToFrontend(data),
+            stockStatus: data.stockStatus,
+            activeViewers: data.activeViewers
+        };
+    } catch (error) {
+        console.error("GraphQL Error:", error);
+        return null;
+    }
+};
 
 // Helper to create axios instances
 const createServiceApi = (baseUrl) => {
@@ -25,10 +61,9 @@ const createServiceApi = (baseUrl) => {
         if (storedUser) {
             try {
                 const userObj = JSON.parse(storedUser);
-                if (userObj.id) {
-                    config.headers['X-User-Id'] = userObj.id;
-                    // Also generic user-id header just in case
-                    config.headers['user-id'] = userObj.id;
+                if (userObj) {
+                    const userId = userObj.id || userObj.keycloakId || "fallback-user-id";
+                    config.headers['X-User-Id'] = userId;
                 }
             } catch (e) {
                 console.error("Error parsing stored user", e);
@@ -50,6 +85,7 @@ const mapBackendProductToFrontend = (p) => ({
     id: p.id,
     title: p.name,
     description: p.description,
+    skuCode: p.skuCode,
     price: p.price,
     image: p.imageUrl,
     category: p.category || "General",
@@ -132,31 +168,37 @@ export const fetchSubCategoriesByCategory = async (category) => {
 // --- AUTH ---
 export const loginUser = async (username, password, fullName = "New User", address = "Unknown") => {
     try {
-        // Dynamic Login against User Service
-        const response = await userApi.post('/api/users/login', {
+        // 1. Get Token from Keycloak (Direct Access Grant)
+        const tokenParams = new URLSearchParams();
+        tokenParams.append('client_id', 'ecommerce-client');
+        tokenParams.append('grant_type', 'password');
+        tokenParams.append('username', username);
+        tokenParams.append('password', password);
+
+        const tokenResponse = await axios.post(
+            'http://localhost:8181/realms/ecommerce-realm/protocol/openid-connect/token',
+            tokenParams,
+            { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+        );
+
+        const accessToken = tokenResponse.data.access_token;
+
+        // 2. Sync with User Service to get/create profile
+        const syncResponse = await userApi.post('/api/users/login', {
             email: username,
-            password: password,
             fullName: fullName,
             address: address
+        }, {
+            headers: { 'Authorization': `Bearer ${accessToken}` }
         });
+
         return {
-            token: "mock-jwt-token-access-granted", // Placeholder until full Auth Server is up
-            user: response.data
+            token: accessToken,
+            user: syncResponse.data
         };
     } catch (error) {
-        // Fallback for registration/simulation if user not found (or 404)
-        if (error.response && error.response.status === 404) {
-            const registerResponse = await userApi.post('/api/users/register', {
-                email: username,
-                fullName: fullName !== "New User" ? fullName : username.split('@')[0],
-                address: address
-            });
-            return {
-                token: "mock-jwt-token-access-granted",
-                user: registerResponse.data
-            };
-        }
-        throw error;
+        console.error("Keycloak Login Error:", error.response?.data || error.message);
+        throw new Error("Invalid credentials or security server unreachable.");
     }
 };
 
@@ -174,7 +216,7 @@ export const getCart = async () => {
 export const addToCart = async (product, quantity = 1) => {
     try {
         const item = {
-            skuCode: product.title.toLowerCase().replace(/\s+/g, '_') + "-" + product.id,
+            skuCode: product.skuCode || (product.title.toLowerCase().replace(/\s+/g, '_') + "-" + product.id),
             productName: product.title,
             quantity: quantity,
             price: product.price,
@@ -193,13 +235,14 @@ export const placeOrder = async (cartItems, total, email, mobileNumber) => {
     try {
         const orderRequest = {
             orderLineItemsDtoList: cartItems.map(item => ({
-                skuCode: item.skuCode || item.id || item.productName,
+                skuCode: item.skuCode || item.id?.toString() || item.productName,
                 price: item.price,
                 quantity: item.quantity
             })),
             email: email,
             mobileNumber: mobileNumber
         };
+        console.log('Placing order with request:', JSON.stringify(orderRequest));
         const response = await orderApi.post('/api/orders', orderRequest);
         return response.data;
     } catch (error) {
@@ -219,13 +262,23 @@ export const getMyOrders = async () => {
 };
 
 // --- PAYMENT ---
-export const makePaymentApi = async (orderId, amount) => {
+export const makePaymentApi = async (orderId, amount, userId) => {
     try {
-        const response = await paymentApi.post('/api/payment', { amount, orderId });
+        const response = await paymentApi.post('/api/payment', { amount, orderId, userId });
         return response.data;
     } catch (error) {
         console.error("Backend Error (Payment):", error);
         throw error;
+    }
+};
+
+export const getPaymentByOrderId = async (orderId) => {
+    try {
+        const response = await paymentApi.get(`/api/payment/order/${orderId}`);
+        return response.data;
+    } catch (error) {
+        console.warn("Backend Error (Get Payment):", error);
+        return null;
     }
 };
 

@@ -14,8 +14,10 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .anyRequest().permitAll()
-            )
-            .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> {}));
+            );
+        // NOTE: Removed .oauth2ResourceServer() — payment-service is called internally
+        // by order-service via WebClient without JWT tokens. JWT validation here was
+        // silently rejecting those inter-service payment requests.
         
         return http.build();
     }

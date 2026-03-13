@@ -25,22 +25,22 @@ function ProductCard({ product }) {
         <FiHeart className={`${isFavorite ? 'text-pink-500 fill-pink-500' : 'text-gray-400 dark:text-gray-600'}`} />
       </button>
 
-      {/* Image */}
-      <div className="block relative cursor-pointer">
-        <div className="overflow-hidden h-72 w-full flex items-center justify-center bg-white dark:bg-gray-800 p-6 relative">
-          <div className="absolute inset-0 bg-gray-50/50 mix-blend-multiply dark:hidden"></div>
-          <img
-            src={product.image}
-            alt={product.title}
-            className="h-full w-auto object-contain z-10 group-hover:scale-105 transition duration-500"
-          />
+      {/* Image Container */}
+      <div className="relative aspect-[4/5] w-full overflow-hidden bg-white dark:bg-gray-800">
+        <div className="absolute inset-0 bg-gray-50/20 mix-blend-multiply dark:hidden"></div>
+        <img
+          src={product.image}
+          alt={product.title}
+          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+        />
 
-          {/* Quick View Overlay Button */}
+        {/* Quick View Overlay */}
+        <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-6">
           <button
             onClick={(e) => { e.preventDefault(); openQuickView(product); }}
-            className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/90 dark:bg-black/80 backdrop-blur-sm text-black dark:text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 z-20 flex items-center gap-2 whitespace-nowrap"
+            className="bg-white/95 dark:bg-gray-900/95 backdrop-blur shadow-lg text-gray-900 dark:text-white px-6 py-2.5 rounded-full text-sm font-bold opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 flex items-center gap-2"
           >
-            <FiEye size={16} /> Quick View
+            <FiEye className="text-indigo-600" /> Quick View
           </button>
         </div>
       </div>

@@ -20,6 +20,7 @@ const Payment = lazy(() => import('./Components/Payment.jsx'));
 const CategoryPage = lazy(() => import('./Components/CategoryPage.jsx'));
 const SearchResults = lazy(() => import('./Components/SearchResults.jsx'));
 const Orders = lazy(() => import('./Components/Orders.jsx'));
+const AdminDashboard = lazy(() => import('./Components/AdminDashboard.jsx'));
 
 
 const router = createBrowserRouter([
@@ -81,6 +82,10 @@ const router = createBrowserRouter([
       {
         path: "/signup",
         element: <Login />,
+      },
+      {
+        path: "/admin",
+        element: <AdminDashboard />,
       },
     ]
 

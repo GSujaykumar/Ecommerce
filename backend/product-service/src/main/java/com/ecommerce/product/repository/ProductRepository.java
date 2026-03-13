@@ -10,6 +10,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findBySubCategoryIgnoreCase(String subCategory);
     List<Product> findByCategoryIgnoreCaseAndSubCategoryIgnoreCase(String category, String subCategory);
     
+    // Instant Autocomplete Search
+    List<Product> findByNameContainingIgnoreCaseOrCategoryContainingIgnoreCase(String name, String category);
+
     @Query("SELECT DISTINCT p.category FROM Product p")
     List<String> findAllCategories();
 

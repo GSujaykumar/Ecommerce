@@ -1,0 +1,11 @@
+# Provision dashboards from the dashboards folder
+apiVersion: 1
+providers:
+  - name: "E-Commerce Microservices"
+    orgId: 1
+    folder: "E-Commerce"
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 30
+    options:
+      path: /etc/grafana/provisioning/dashboards/json

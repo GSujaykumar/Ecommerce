@@ -1,98 +1,138 @@
 import React from "react";
-import Texttype from "./Texttype";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.08, delayChildren: 0.1 },
+  },
+};
+
+const item = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0 },
+};
+
+const float = {
+  initial: { y: 0, x: 0 },
+  animate: {
+    y: [0, -12, 0],
+    x: [0, 4, 0],
+    transition: { duration: 5, repeat: Infinity, ease: "easeInOut" },
+  },
+};
+
 const HeroSection = () => {
   return (
-    <section className="relative overflow-hidden bg-[var(--color-normalbg)] dark:bg-[var(--color-darkbg)] transition-colors duration-300 min-h-[90vh] flex items-center">
+    <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-[var(--color-normalbg)] dark:bg-[var(--color-darkbg)] transition-colors duration-300">
+      {/* Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-violet-50/30 dark:from-gray-950 dark:via-gray-900 dark:to-violet-950/20" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_70%_at_60%_-10%,rgba(139,92,246,0.15),transparent)] dark:bg-[radial-gradient(ellipse_80%_70%_at_60%_-10%,rgba(139,92,246,0.08),transparent)]" />
 
-      {/* Background Gradient */}
-      <div
-        className="
-    absolute inset-0
-    bg-gradient-to-tr
-    from-stone-50 via-white to-stone-100
-    dark:from-slate-900 dark:via-gray-900 dark:to-slate-800
-    opacity-80
-  "
-      ></div>
+      {/* Floating orbs */}
+      <motion.div
+        className="absolute top-1/4 right-1/4 w-72 h-72 rounded-full bg-violet-200/60 dark:bg-violet-900/30 blur-3xl"
+        variants={float}
+        initial="initial"
+        animate="animate"
+      />
+      <motion.div
+        className="absolute bottom-1/4 left-1/4 w-96 h-96 rounded-full bg-indigo-200/40 dark:bg-indigo-900/20 blur-3xl"
+        variants={float}
+        initial="initial"
+        animate="animate"
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+      />
 
-      <div className="relative max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
-
-        {/* LEFT CONTENT */}
+      <div className="relative max-w-7xl mx-auto px-6 py-20 lg:py-28 grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-20 items-center">
+        {/* Left content */}
         <motion.div
-          initial={{ opacity: 0, x: -50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+          variants={container}
+          initial="hidden"
+          animate="show"
+          className="text-center lg:text-left"
         >
-          <span className="inline-block mb-4 py-1 px-3 rounded-full bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 text-xs font-bold tracking-widest uppercase">
-            New Summer Collection
-          </span>
+          <motion.span
+            variants={item}
+            className="inline-flex items-center gap-1.5 mb-5 py-2 px-4 rounded-full bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300 text-xs font-semibold tracking-wider uppercase"
+          >
+            New Arrivals
+          </motion.span>
 
-          <h1 className="text-5xl lg:text-7xl font-bold leading-tight text-gray-900 dark:text-white mb-6">
-            Redefining <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">
-              Modern Elegance
+          <motion.h1
+            variants={item}
+            className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-gray-900 dark:text-white leading-[1.1] mb-5"
+          >
+            Style that{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 dark:from-violet-400 dark:via-purple-400 dark:to-indigo-400">
+              works for you
             </span>
-          </h1>
+          </motion.h1>
 
-          <p className="mt-6 max-w-lg text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
-            Discover exclusive fashion crafted with confidence and sophistication. Upgrade your wardrobe with our premium selection.
-          </p>
+          <motion.p
+            variants={item}
+            className="max-w-xl text-lg text-gray-600 dark:text-gray-400 leading-relaxed mx-auto lg:mx-0"
+          >
+            Premium fashion and essentials, delivered with care. Shop the latest collection and enjoy free shipping on orders over $50.
+          </motion.p>
 
-          {/* PREMIUM BUTTONS */}
-          <div className="mt-10 flex flex-wrap gap-4">
-            <Link to="/women" className="px-8 py-4 rounded-full bg-gray-900 text-white font-semibold hover:bg-gray-800 hover:scale-105 transition-all shadow-xl dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100">
+          <motion.div variants={item} className="mt-8 flex flex-wrap gap-4 justify-center lg:justify-start">
+            <Link
+              to="/women"
+              className="inline-flex items-center justify-center px-8 py-3.5 rounded-xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-semibold text-sm shadow-lg shadow-gray-900/20 dark:shadow-gray-500/20 hover:bg-gray-800 dark:hover:bg-gray-100 transition-all focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2"
+            >
               Shop Now
             </Link>
-
-            <Link to="/men" className="px-8 py-4 rounded-full border border-gray-300 text-gray-900 font-semibold hover:border-gray-900 hover:bg-gray-50 transition-all dark:border-gray-600 dark:text-gray-300 dark:hover:border-white dark:hover:text-white dark:hover:bg-white/10">
-              View All Products
+            <Link
+              to="/men"
+              className="inline-flex items-center justify-center px-8 py-3.5 rounded-xl border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold text-sm hover:border-violet-500 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20 transition-all focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+            >
+              View All
             </Link>
-          </div>
+          </motion.div>
 
-          {/* TRUST LINE */}
-          <div className="mt-12 flex items-center gap-8 border-t border-gray-200 dark:border-gray-700 pt-8">
-            <div>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">15K+</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Global Customers</p>
-            </div>
-            <div className="w-px h-12 bg-gray-200 dark:bg-gray-700"></div>
-            <div>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">4.9</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Star Reviews</p>
-            </div>
-          </div>
+          <motion.div
+            variants={item}
+            className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800 flex flex-wrap items-center justify-center lg:justify-start gap-6 sm:gap-8"
+          >
+            {[
+              { value: "15K+", label: "Customers" },
+              { value: "4.9", label: "Rating" },
+              { value: "24/7", label: "Support" },
+            ].map((stat, i) => (
+              <div key={i} className="text-center lg:text-left">
+                <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{stat.value}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{stat.label}</p>
+              </div>
+            ))}
+          </motion.div>
         </motion.div>
 
-        {/* RIGHT IMAGE */}
+        {/* Right image */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.9, rotate: 2 }}
-          animate={{ opacity: 1, scale: 1, rotate: 0 }}
-          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-          className="relative"
+          initial={{ opacity: 0, scale: 0.96, x: 20 }}
+          animate={{ opacity: 1, scale: 1, x: 0 }}
+          transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+          className="relative flex justify-center lg:justify-end"
         >
-          {/* Decorative Elements */}
-          <div className="absolute -top-10 -right-10 w-72 h-72 bg-purple-200 dark:bg-purple-900/40 rounded-full blur-3xl opacity-50"></div>
-          <div className="absolute -bottom-10 -left-10 w-72 h-72 bg-indigo-200 dark:bg-indigo-900/40 rounded-full blur-3xl opacity-50"></div>
-
-          {/* Image Container */}
-          <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white dark:border-gray-800 group">
+          <motion.div
+            className="relative rounded-2xl overflow-hidden shadow-2xl shadow-gray-900/10 dark:shadow-black/30 ring-1 ring-gray-200/80 dark:ring-gray-800"
+            whileHover={{ scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+          >
             <img
               src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1"
-              alt="Luxury Fashion Model"
-              className="w-full h-[600px] object-cover transition-transform duration-700 group-hover:scale-105"
+              alt="Featured collection"
+              className="w-full aspect-[4/5] sm:max-h-[580px] object-cover"
             />
-
-            {/* Overlay Tag */}
-            <div className="absolute bottom-8 left-8 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md px-6 py-4 rounded-2xl shadow-lg transform transition-transform hover:-translate-y-2">
-              <p className="text-sm text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Featured</p>
-              <p className="text-xl font-bold text-gray-900 dark:text-white">Summer Edition</p>
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-6 pt-16">
+              <p className="text-violet-300 text-xs font-semibold uppercase tracking-wider mb-1">Featured</p>
+              <p className="text-xl font-bold text-white">Summer Edition</p>
             </div>
-          </div>
+          </motion.div>
         </motion.div>
-
       </div>
     </section>
   );

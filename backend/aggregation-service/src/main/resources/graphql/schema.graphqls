@@ -1,0 +1,14 @@
+type Query {
+    productDetails(id: ID!): ProductAggregation
+}
+
+type ProductAggregation {
+    id: ID
+    name: String
+    description: String
+    price: Float
+    category: String
+    imageUrl: String
+    stockStatus: Boolean
+    activeViewers: Int
+}
